@@ -1,8 +1,3 @@
-<a href="http://localhost:8080/_test_api/?controller=hello&action=greet&greeting=Hello&target=world">Hello world</a><br>
-<a href="http://localhost:8080/_test_api/?controller=indicator&action=list">List indicators</a><br>
-<a href="http://localhost:8080/_test_api/?controller=indicator&action=get&id=1">Get indicator 1</a><br>
-<a href="http://localhost:8080/_test_api/?controller=indicator&action=add&name=sample&type=filename&value=virus.exe">Insert new sample indicator</a><br>
-<a href="http://localhost:8080/_test_api/?controller=indicator&action=edit&id=10&name=foo&type=bar&value=something&hidden=0">Edit id #10</a><br>
 <?php
 /*
 Simple API based on a online tutorial
