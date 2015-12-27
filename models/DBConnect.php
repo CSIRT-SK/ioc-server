@@ -22,6 +22,8 @@ class DBConnect {
         $this->db->close();
     }
     
+// ========== IOC ==========
+    
     public function iocFetchList() {
         // fetch all indicator entries from the `indicators` table
         $sql = 'SELECT * '.
@@ -40,7 +42,6 @@ class DBConnect {
             throw new Exception('Error closing statement [' . $stmt->error . ']');
 
         return $result->fetch_all(MYSQLI_ASSOC);
-        #return $this->runQuery($sql);
     }
 
     public function iocFetchId($id) {
@@ -131,6 +132,91 @@ class DBConnect {
 
         return $res;
     }
+ 
+// ========== REPORT ==========
+
+    public function repFetchList() {
+        // fetch all reports from the database
+        $sql = 'SELECT * '.
+               'FROM `reports`;';
+        
+        if (!$stmt = $this->db->prepare($sql))
+            throw new Exception('Error preparing statement [' . $this->db->error . ']');
+        
+        if (!$stmt->execute())
+            throw new Exception('Error executing statement [' . $stmt->error . ']');
+        
+        if (!$result = $stmt->get_result())
+            throw new Exception('Error getting result [' . $stmt->error . ']');
+
+        if (!$stmt->close())
+            throw new Exception('Error closing statement [' . $stmt->error . ']');
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function repFetchId($id) {
+        // fetch one report
+        $sql = 'SELECT * '.
+               'FROM `reports` '.
+               'WHERE `id` = ?;';
+        
+        if (!$stmt = $this->db->prepare($sql))
+            throw new Exception('Error preparing statement [' . $this->db->error . ']');
+        
+        if (!$stmt->bind_param('i', $id)) 
+            throw new Exception('Error binding parameters [' . $stmt->error . ']');
+        
+        if (!$stmt->execute())
+            throw new Exception('Error executing statement [' . $stmt->error . ']');
+        
+        if (!$result = $stmt->get_result())
+            throw new Exception('Error getting result [' . $stmt->error . ']');
+
+        if (!$stmt->close())
+            throw new Exception('Error closing statement [' . $stmt->error . ']');
+
+        return $result->fetch_all(MYSQLI_ASSOC)[0];
+    }
     
+    public function repAdd() {
+        /*  TODO: No report format yet
+        if ($value2 == '') $value2 = NULL;
+        
+        $sql = 'INSERT INTO `indicators` '.
+               '(`name`, `type`, `value`, `value2`) '.
+               'VALUES (?, ?, ?, ?);';
+        
+        if (!$stmt = $this->db->prepare($sql))
+            throw new Exception('Error preparing statement [' . $this->db->error . ']');
+        
+        if (!$stmt->bind_param('ssss', $name, $type, $value, $value2)) 
+            throw new Exception('Error binding parameters [' . $stmt->error . ']');
+        
+        if (!$stmt->execute())
+            throw new Exception('Error executing statement [' . $stmt->error . ']');
+        
+        if (!$stmt->close())
+            throw new Exception('Error closing statement [' . $stmt->error . ']');
+
+        $sql = 'SELECT LAST_INSERT_ID();';
+        
+        if (!$stmt = $this->db->prepare($sql))
+            throw new Exception('Error preparing statement [' . $this->db->error . ']');
+
+        if (!$stmt->execute())
+            throw new Exception('Error executing statement [' . $stmt->error . ']');
+        
+        if (!$result = $stmt->get_result())
+            throw new Exception('Error getting result [' . $stmt->error . ']');
+            
+        if (!$stmt->close())
+            throw new Exception('Error closing statement [' . $stmt->error . ']');
+
+        return ['id' => $result->fetch_all(MYSQLI_ASSOC)[0]['LAST_INSERT_ID()']];
+        */
+    }
+    
+ 
 }
 ?>
