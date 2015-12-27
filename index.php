@@ -46,8 +46,8 @@ try{
     
     // execute the action and return results
     $result = array();
-    $result['data'] = $controller->$action();
     $result['success'] = true;
+    $result['data'] = $controller->$action();
     
 } catch (Exception $e) {
     // return error message
