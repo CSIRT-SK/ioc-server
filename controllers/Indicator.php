@@ -37,6 +37,16 @@ class Indicator {
         return $result;
     }
     
+    /*
+      == Add & Edit ==
+      Adding and Editing should not be available in the client API.
+      Clients are not supposed to alter the IOC database, only read from it. Making them accessible is just needless risk.
+      
+      Question is: Should they remain in the API hidden behind some security check, so that only the admin aplication would
+      be able to use them, OR remove them from the API completely and the administration app will call the methods directly
+      (the methods could remain the same, they will just not be accessible through URL)
+    */
+    
     public function addAction() {
     // adds new entry to the database
         $db = new DBConnect();
