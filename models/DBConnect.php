@@ -132,7 +132,57 @@ class DBConnect {
 
         return $res;
     }
- 
+// ========== IOC SET ==========
+
+    public function setFetchId($id) {
+        // fetch an indicator set from the `sets` table
+        $sql = 'SELECT * '.
+               'FROM `sets` '.
+               'WHERE `id` = ?;';
+        
+        if (!$stmt = $this->db->prepare($sql))
+            throw new Exception('Error preparing statement [' . $this->db->error . ']');
+        
+        if (!$stmt->bind_param('i', $id)) 
+            throw new Exception('Error binding parameters [' . $stmt->error . ']');
+        
+        if (!$stmt->execute())
+            throw new Exception('Error executing statement [' . $stmt->error . ']');
+        
+        if (!$result = $stmt->get_result())
+            throw new Exception('Error getting result [' . $stmt->error . ']');
+
+        if (!$stmt->close())
+            throw new Exception('Error closing statement [' . $stmt->error . ']');
+
+        return $result->fetch_all(MYSQLI_ASSOC)[0];
+    }
+
+    public function setFetchName($name) {
+        // fetch an indicator set from the `sets` table
+        $sql = 'SELECT * '.
+               'FROM `sets` '.
+               'WHERE `name` = ?;';
+        
+        if (!$stmt = $this->db->prepare($sql))
+            throw new Exception('Error preparing statement [' . $this->db->error . ']');
+        
+        if (!$stmt->bind_param('s', $name)) 
+            throw new Exception('Error binding parameters [' . $stmt->error . ']');
+        
+        if (!$stmt->execute())
+            throw new Exception('Error executing statement [' . $stmt->error . ']');
+        
+        if (!$result = $stmt->get_result())
+            throw new Exception('Error getting result [' . $stmt->error . ']');
+
+        if (!$stmt->close())
+            throw new Exception('Error closing statement [' . $stmt->error . ']');
+
+        return $result->fetch_all(MYSQLI_ASSOC)[0];
+    }
+
+
 // ========== REPORT ==========
 
     public function repFetchList() {
