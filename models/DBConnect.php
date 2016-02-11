@@ -26,8 +26,9 @@ class DBConnect {
     
     public function iocFetchList() {
         // fetch all indicator entries from the `indicators` table
-        $sql = 'SELECT * '.
-               'FROM `indicators`;';
+        $sql = 'SELECT `id`, `name`, `type`, `value`, `value2`, `parent` '.
+               'FROM `indicators` '.
+               'WHERE `hidden` = 0;';
         
         if (!$stmt = $this->db->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->db->error . ']');
