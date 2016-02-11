@@ -51,6 +51,6 @@ try{
     $result['errormsg'] = $e->getMessage();
 }
 
-echo json_encode($result);
+echo json_encode($result, JSON_PRETTY_PRINT);
 exit();
 ?>
