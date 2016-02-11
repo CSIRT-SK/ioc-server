@@ -41,7 +41,14 @@ class DBConnect {
         if (!$stmt->close())
             throw new Exception('Error closing statement [' . $stmt->error . ']');
 
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $ret = [];
+        while ($row = $result->fetch_assoc()) {
+            $ret[$row['id']] = $row;
+            unset($ret[$row['id']]['id']);
+        }
+            
+        //return $result->fetch_all(MYSQLI_ASSOC);
+        return $ret;
     }
 
     public function iocFetchId($id) {
