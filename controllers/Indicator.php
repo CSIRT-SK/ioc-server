@@ -9,6 +9,42 @@ class Indicator {
         $this->params = $params;
     }
     
+    public function requestAction() {
+    // returns all entries in a set
+        $db = new DBConnect();
+        
+        // fetch all IOCs in DB
+        $result = $db->iocFetchList();
+        $iocList = $result;
+        
+        foreach ($iocList as $key => &$entry) {
+            if ($entry['parent'] != 0)
+                $iocList[$entry['parent']]['children'][] = &$entry;
+            unset($entry['parent']);
+        }
+        
+        $missingParams = '';
+        if (!isset($this->params['name']))
+            $missingParams .= 'name ';
+        if ($missingParams != '')
+            throw new Exception('Parameters required: ' . $missingParams);
+        
+        $result = $db->setFetchName($this->params['name']);
+        
+        $root = $iocList[$result['ioc_id']];
+        //$root = $this->expandIocTree($root, $iocList);
+        
+        return $root;
+    }
+    
+    public function expandIocTree($node, $iocList) {
+        if ($node['type'] == 'AND' || $node['type'] == 'OR') {
+            $node['value'] = $this->expandIocTree($iocList[$node['value']], $iocList);
+            $node['value2'] = $this->expandIocTree($iocList[$node['value2']], $iocList);
+        }
+        return $node;
+    }
+    
     public function listAction() {
     // returns all entries in the IOC database
         $db = new DBConnect();
