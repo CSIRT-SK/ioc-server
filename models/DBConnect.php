@@ -10,7 +10,7 @@ class DBConnect {
 
     public function __construct() {
         // open new MYSQLi connection
-        $this->db = new mysqli(HOST, USER, PASS, DATABASE);
+        @$this->db = new mysqli(HOST, USER, PASS, DATABASE);
         
         if ($this->db->connect_errno > 0) {
             throw new Exception('Unable to connect to database [' . $this->db->connect_error . ']');
