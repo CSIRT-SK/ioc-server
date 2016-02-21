@@ -37,7 +37,7 @@ class Indicator {
         return $root;
     }
     
-    public function expandIocTree($node, $iocList) {
+    private function expandIocTree($node, $iocList) {
         if ($node['type'] == 'AND' || $node['type'] == 'OR') {
             $node['value'] = $this->expandIocTree($iocList[$node['value']], $iocList);
             $node['value2'] = $this->expandIocTree($iocList[$node['value2']], $iocList);
@@ -45,7 +45,7 @@ class Indicator {
         return $node;
     }
     
-    public function listAction() {
+    public function listActionDep() {
     // returns all entries in the IOC database
         $db = new DBConnect();
         
@@ -56,7 +56,7 @@ class Indicator {
         return $result;
     }
     
-    public function getAction() {
+    public function getActionDep() {
     // returns one entry based on id
         $db = new DBConnect();
         
@@ -83,7 +83,7 @@ class Indicator {
       (the methods could remain the same, they will just not be accessible through URL)
     */
     
-    public function addAction() {
+    public function addActionDep() {
     // adds new entry to the database
         $db = new DBConnect();
         
@@ -107,7 +107,7 @@ class Indicator {
         return $result;
     }
 
-    public function editAction() {
+    public function editActionDep() {
     // adds new entry to the database
         $db = new DBConnect();
         
