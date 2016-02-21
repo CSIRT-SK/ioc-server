@@ -1,0 +1,31 @@
+div.header{
+    margin-bottom: 5px;
+}
+
+ul{
+    list-style-type: none;
+    margin: 0;
+    padding-left: 15px;
+}
+
+li::before{
+    content: "\251C  ";
+}
+
+li:last-child::before{
+    content: "\2514  "; 
+}
+
+span.name{
+
+}
+
+span.type{
+    position: absolute;
+    left: 200px;
+}
+
+span.value{
+    position: absolute;
+    left: 300px;
+}

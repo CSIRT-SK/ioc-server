@@ -1,3 +1,32 @@
+<?php
+define('SET', 'setname');
+define('API', 'https://localhost/ioc-server/api.php');
+define('CACERT', 'C:\xampp\apache\bin\certtest\ca.pem');
+define('CLIENTCERT', 'C:\xampp\apache\bin\certtest\client.pem');
+define('CLIENTKEY', 'C:\xampp\apache\bin\certtest\client.key');
+
+define('DEBUG', false);
+
+function printIocTree($node) {
+    echo '<li><span class="name">' . $node['name'] . '</span><span class="type">' . $node['type'] . '</span>';
+    if ($node['value'] != NULL) {
+        echo '<span class="value">[ ' . $node['value'];
+        if ($node['value2'] != NULL) {
+            echo ' | ' . $node['value2'];
+        }
+        echo ' ]</span>';
+    }
+    if (isset($node['children'])) {
+        echo '<ul>';
+        foreach ($node['children'] as $child) {
+            printIocTree($child);
+        }
+        echo '</ul>';
+    }
+    
+}
+?>
+
 <!DOCTYPE html>
 
 <!--
@@ -6,42 +35,47 @@
 <html>
     <head>
         <title>Sample text</title>
+        <link href="style.css" rel="stylesheet">
     </head>
     <body>
-        <h3>Indicator list</h3>
+        <h3>Indicator list "<?php echo SET?>"</h3>
         <?php $params = [
                 'controller' => 'indicator',
-                'action' => 'list'
+                'action' => 'request',
+                'name' => SET
             ];
 
             $curl = curl_init();
             curl_setopt_array($curl, [
-                CURLOPT_URL => 'http://localhost:8080/_test_api/?' . http_build_query($params),
-                CURLOPT_RETURNTRANSFER => true
+                CURLOPT_URL => API . '?' . http_build_query($params),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_SSL_VERIFYPEER => true,
+                CURLOPT_SSL_VERIFYHOST => 2,
+                CURLOPT_CAINFO => CACERT,
+                CURLOPT_SSLCERT => CLIENTCERT,
+                CURLOPT_SSLKEY => CLIENTKEY
             ]);
-            $result = json_decode(curl_exec($curl), true);
-            if ($result === false) {
-                echo 'cURL error [' . curl_error() . ']';
+            $curl_answer = curl_exec($curl);
+            if (DEBUG) {
+                echo '<pre>';
+                echo var_export($curl_answer);
+                echo '</pre><br>';
+            }
+
+            if ($curl_answer === false) {
+                echo 'cURL error [' . curl_error($curl) . ']';
             } else {
-                if (!$result['success']) {
-                    echo 'Server error [' . $result['errormsg'] . ']';
-                } else {
-                    // request was successful, parse the data into table
-        ?>
-        <table style="border: 1px solid black">
-            <tr>
-                <th>Title</th><th>Type</th><th>Value</th>
-            </tr>
-            <?php
-                    foreach ($result['data'] as $entry) {
-                        echo '<tr>';
-                        echo '<td>' . $entry['name'] . '</td><td>' . $entry['type'] . '</td><td>' . $entry['value'];
-                        if ($entry['value2'] !== NULL) echo ' | ' . $entry['value2'] . '</td>';
-                        echo '</tr>';
-                    }
-            ?>
-        </table>
-        <?php
+                $result = json_decode($curl_answer, true);
+                if (DEBUG) {
+                    echo '<pre>';
+                    echo var_export($result);
+                    echo '</pre><br>';
+                }
+                if ($result['success'] == true) {
+                    echo '<div class="header"><span class="name">Name</span><span class="type">Type</span><span class="value">Value</span></div>';
+                    echo '<div class="tree">' . SET . '<ul>';
+                    printIocTree($result['data']);
+                    echo '</ul></div>';
                 }
             }
         ?>
