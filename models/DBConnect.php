@@ -45,7 +45,7 @@ class DBConnect {
         $ret = [];
         while ($row = $result->fetch_assoc()) {
             $ret[$row['id']] = $row;
-            unset($ret[$row['id']]['id']);
+            //unset($ret[$row['id']]['id']);
         }
             
         //return $result->fetch_all(MYSQLI_ASSOC);
