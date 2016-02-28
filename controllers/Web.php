@@ -2,48 +2,16 @@
 /*
 Controller for various API calls related to the IOC database
 */
-class Indicator {
-    private $params;
-    
+include_once 'Client.php';
+
+class Web extends Client{
+
     public function __construct($params) {
-        $this->params = $params;
+        parent::__construct($params);
+        // TODO some sort of check that would restrict using web controller outside of local requests
     }
-    
-    public function requestAction() {
-    // returns all entries in a set
-        $db = new DBConnect();
-        
-        // fetch all IOCs in DB
-        $result = $db->iocFetchList();
-        $iocList = $result;
-        
-        foreach ($iocList as $key => &$entry) {
-            if ($entry['parent'] != 0)
-                $iocList[$entry['parent']]['children'][] = &$entry;
-            unset($entry['parent']);
-        }
-        
-        $missingParams = '';
-        if (!isset($this->params['name']))
-            $missingParams .= 'name ';
-        if ($missingParams != '')
-            throw new Exception('Parameters required: ' . $missingParams);
-        
-        $result = $db->setFetchName($this->params['name']);
-        
-        $root = $iocList[$result['ioc_id']];
-        //$root = $this->expandIocTree($root, $iocList);
-        
-        return $root;
-    }
-    
-    private function expandIocTree($node, $iocList) {
-        if ($node['type'] == 'AND' || $node['type'] == 'OR') {
-            $node['value'] = $this->expandIocTree($iocList[$node['value']], $iocList);
-            $node['value2'] = $this->expandIocTree($iocList[$node['value2']], $iocList);
-        }
-        return $node;
-    }
+
+    // TODO Web app calls go here - clean up the old test actions and add new
     
     public function listActionDep() {
     // returns all entries in the IOC database
