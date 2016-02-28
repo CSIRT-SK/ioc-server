@@ -1,6 +1,6 @@
 <?php
 define('SET', 'setname');
-define('API', 'https://localhost/ioc-server/api.php');
+define('API', 'https://158.195.250.203/ioc-server/api.php');
 define('CACERT', 'C:\xampp\apache\bin\certtest\ca.pem');
 define('CLIENTCERT', 'C:\xampp\apache\bin\certtest\client.pem');
 define('CLIENTKEY', 'C:\xampp\apache\bin\certtest\client.key');
@@ -51,6 +51,7 @@ function printIocTree($node) {
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_SSL_VERIFYPEER => true,
                 CURLOPT_SSL_VERIFYHOST => 2,
+                CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
                 CURLOPT_CAINFO => CACERT,
                 CURLOPT_SSLCERT => CLIENTCERT,
                 CURLOPT_SSLKEY => CLIENTKEY
