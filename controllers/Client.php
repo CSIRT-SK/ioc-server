@@ -37,23 +37,60 @@ class Client {
     // retrieve report from client
         $this->checkParams('report');
         
-        // parse data from JSON
-        // throw errormessage exceptions if somethig is wrong
-        // put them into database
-        // return success message
+        $report = json_decode($this->params['report'], true);
         
-        return $this->params['report']; // for now just reply with same data
+        if ($report == null)
+            throw new Exception('Not a valid JSON');
+        
+        /* Report format
+            {
+                "org": x,
+                "device": x,
+                "timestamp": x,
+                "setname": x,
+                "indicators": [
+                    {
+                        "id": x,
+                        "result": x
+                    },
+                    {
+                        "id": x,
+                        "result": x
+                    },
+                    ...
+                ]
+            }
+        */
+        $missing = $this->checkArrayEntries($report, 'org', 'device', 'timestamp', 'setname', 'indicators');
+        if ($missing != null)
+            throw new Exception('Report missing entries: ' . $missing);
+        
+        foreach($report['indicators'] as $indicator) {
+            $missing = $this->checkArrayEntries($indicator, 'id', 'result');
+            if ($missing != null)
+                throw new Exception('Indicator entry missing entries: ' . $missing);
+        }
+
+        // put them into database
+        
+        return count($report['indicators']);
     }
     
-    protected function checkParams(...$params) {
+    protected function checkParams(...$entries) {
+        $missingParams = $this->checkArrayEntries($this->params, ...$entries);
+        if ($missingParams != null)
+            throw new Exception('Action requires parameters: ' . $missingParams);
+    }
+    
+    protected function checkArrayEntries($array, ...$entries) {
     // check if params are set
-        $missingParams = '';
-        foreach ($params as $p) {
-            if (!isset($this->params[$p]))
-                $missingParams .= $p . ', ';
+        $missing = '';
+        foreach ($entries as $e) {
+            if (!isset($array[$e]))
+                $missing .= $e . ', ';
         }
-        if ($missingParams != '')
-            throw new Exception('Parameters required: ' . rtrim($missingParams, ', '));
+        if ($missing != '')
+            return rtrim($missing, ', ');
     }
 }
 ?>
