@@ -71,9 +71,16 @@ class Client {
                 throw new Exception('Indicator entry missing entries: ' . $missing);
         }
 
-        // put them into database
+        $db = new DBConnect();
         
-        return count($report['indicators']);
+//        foreach($report['indicators'] as $indicator) {
+//            $db->repAdd($report['org'], $report['device'], $report['timestamp'], $report['setname'], $indicator['id'], $indicator['result']);
+//        }
+        
+        $result = $db->repAddMulti($report);
+        
+        return $result;
+        //return count($report['indicators']);
     }
     
     protected function checkParams(...$entries) {
