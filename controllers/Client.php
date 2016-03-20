@@ -1,9 +1,11 @@
 <?php
 /*
-Controller for various API calls related to the IOC database
+Publicly exposed API functions
 */
+include_once '../models/DBConnect.php';
+
 class Client {
-    protected $params;
+    private $params;
     
     public function __construct($params) {
         $this->params = $params;
@@ -25,10 +27,13 @@ class Client {
             unset($entry['parent']);
         }
         
-        $result = $db->setFetchName($this->params['name']);
+        $results = $db->setFetchName($this->params['name']);
+        //echo var_export($iocList);
+        foreach ($results as $row) {
+            $root[] = $iocList[$row['ioc_id']];
+        }
         
-        $root = $iocList[$result['ioc_id']];
-        //$root = $this->expandIocTree($root, $iocList);
+        $db->close();
         
         return $root;
     }
@@ -73,23 +78,20 @@ class Client {
 
         $db = new DBConnect();
         
-//        foreach($report['indicators'] as $indicator) {
-//            $db->repAdd($report['org'], $report['device'], $report['timestamp'], $report['setname'], $indicator['id'], $indicator['result']);
-//        }
-        
         $result = $db->repAddMulti($report);
         
-        return $result;
-        //return count($report['indicators']);
+        $db->close();
+        
+        return ['added' => $result];
     }
     
-    protected function checkParams(...$entries) {
+    private function checkParams(...$entries) {
         $missingParams = $this->checkArrayEntries($this->params, ...$entries);
         if ($missingParams != null)
             throw new Exception('Action requires parameters: ' . $missingParams);
     }
     
-    protected function checkArrayEntries($array, ...$entries) {
+    private function checkArrayEntries($array, ...$entries) {
     // check if params are set
         $missing = '';
         foreach ($entries as $e) {

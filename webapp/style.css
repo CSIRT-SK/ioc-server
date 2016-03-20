@@ -1,18 +1,41 @@
-div.header{
-    margin-bottom: 5px;
+*{
+    margin: 0;
+    padding: 0;
 }
 
-ul{
+html{
+    background-color: #c5C5c5;
+}
+
+body{
+    width: 800px;
+    margin: 0 auto;
+    background-color: #ffFFff;
+    border: 1px solid black;
+}
+
+div.header{
+    margin-bottom: 5px;
+    position: relative;
+}
+
+.tree{
+    position: relative;
+    font-weight: bold;
+}
+
+.tree ul{
+    font-weight: normal;
     list-style-type: none;
     margin: 0;
     padding-left: 15px;
 }
 
-li::before{
+.tree li::before{
     content: "\251C  ";
 }
 
-li:last-child::before{
+.tree li:last-child::before{
     content: "\2514  "; 
 }
 
@@ -28,4 +51,76 @@ span.type{
 span.value{
     position: absolute;
     left: 300px;
+}
+
+nav{
+    padding: 5px 10px 5px 10px;
+    background-color: #000000;
+    width: %100;
+}
+
+nav ul li{
+    display: inline;
+    list-style-type: none;
+}
+
+nav ul li a:link, nav ul li a:visited{
+    padding: 5px;
+    color: #ffFFff;
+    text-decoration: none;
+}
+
+nav ul li a:hover{
+    background-color: #ffFFff;
+    color: #000000;
+}
+
+main{
+    padding: 10px;
+}
+
+h2{
+    margin-bottom: 10px;
+}
+
+article{
+    margin: 0 auto;
+    padding: 5px 10px 5px 10px;
+    width: 80%;
+    border-bottom: 1px solid #ccCCcc;
+}
+
+article:last-child{
+    border-bottom: 0 none #000000;
+}
+
+div.content{
+    padding: 5px;
+}
+
+.iocTable{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.iocTable td, .iocTable th{
+    text-align: center;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+    padding: 2px 3px 2px 2px;
+}
+
+.success{
+    color: #22DD22;
+}
+
+.fail{
+    color: #dd2222;
+}
+
+footer{
+    text-align: right;
+    padding: 5px 10px 5px 10px;
+    background-color: #000000;
+    color: #ffFFff;
 }

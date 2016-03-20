@@ -1,6 +1,6 @@
 <?php
 /*
-Simple API based on a online tutorial
+Extensible endpoint for remote API interaction
 */
 
 include_once 'models/DBConnect.php';

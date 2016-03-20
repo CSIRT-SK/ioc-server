@@ -1,9 +1,9 @@
 <?php
 include_once('page.php');
-pageStart('index');
+pageStart('report');
 ?>
 
-index
+report
 
 <?php
 pageEnd();
