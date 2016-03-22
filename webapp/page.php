@@ -3,6 +3,14 @@ include_once('../controllers/Web.php');
 
 $api = new Web();
 
+function successMsg() {
+    echo '<p class="success">OK</p>';
+}
+
+function errorMsg() {
+    echo '<p class="fail">Failed</p>';
+}
+
 function pageStart($title) {
 ?>
 <!DOCTYPE html>
@@ -13,14 +21,15 @@ function pageStart($title) {
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <nav>
+        <header>
             <ul>
                 <li><a href="index.php">index</a></li>
                 <li><a href="ioc.php">ioc</a></li>
                 <li><a href="set.php">set</a></li>
-                <li><a href="report.php">report</a></li>
+                    <li><a href="report.php">report</a></li>
+                <li><a href="extra.php">extra</a></li>
             </ul>
-        </nav>
+        </header>
         <main>
 <?php
 }
@@ -29,7 +38,7 @@ function pageEnd() {
 ?>
         </main>
         <footer>
-            footer &copy; Miso
+            &copy; Miso
         </footer>
     </body>
 </html>

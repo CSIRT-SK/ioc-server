@@ -173,14 +173,6 @@ function printAddIoc() {
 <?php
 }
 
-function successMsg() {
-    echo '<p class="success">OK</p>';
-}
-
-function errorMsg() {
-    echo '<p class="fail">Failed</p>';
-}
-
 function iocTypes() {
     return ['registry', 'filename', 'filehash', 'dns', 'cert', 'processname', 'processhash', 'AND', 'OR'];
 }

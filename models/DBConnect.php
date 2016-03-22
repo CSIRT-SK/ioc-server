@@ -272,15 +272,15 @@ class DBConnect {
         return $this->lastInsertId();
     }
     
-    public function setHide($id, $hidden) {
+    public function setHide($name, $ioc_id, $hidden) {
         $sql = 'UPDATE `sets` '.
                'SET `hidden` = ? '.
-               'WHERE `id` = ?;';
+               'WHERE `name` = ? AND `ioc_id` = ?;';
 
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
-        if (!$stmt->bind_param('ii', $hidden, $id)) 
+        if (!$stmt->bind_param('isi', $hidden, $name, $ioc_id)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())

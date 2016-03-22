@@ -53,24 +53,24 @@ span.value{
     left: 300px;
 }
 
-nav{
+header{
     padding: 5px 10px 5px 10px;
     background-color: #000000;
     width: %100;
 }
 
-nav ul li{
+header ul li{
     display: inline;
     list-style-type: none;
 }
 
-nav ul li a:link, nav ul li a:visited{
+header ul li a:link, header ul li a:visited{
     padding: 5px;
     color: #ffFFff;
     text-decoration: none;
 }
 
-nav ul li a:hover{
+header ul li a:hover{
     background-color: #ffFFff;
     color: #000000;
 }
@@ -107,6 +107,17 @@ div.content{
     text-align: center;
     border-top: 1px solid black;
     border-bottom: 1px solid black;
+    padding: 2px 3px 2px 2px;
+}
+
+.repTable{
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.repTable td, .repTable th{
+    text-align: center;
+    border: 1px solid black;
     padding: 2px 3px 2px 2px;
 }
 

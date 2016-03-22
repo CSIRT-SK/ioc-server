@@ -29,12 +29,12 @@ class Web {
     }
  
     // inserts new ioc into database and returns its id
-    public function iocAdd(string $name, string $type, string $value, string $value2, int $parent = 0) {
+    public function iocAdd(string $name, string $type, $value, $value2, int $parent = 0) {
         return $this->db->iocAdd($name, $type, $value, $value2, $parent);
     }
  
     // updates ioc with given id, returns affected rows (0 = id does not exist, 1 = ok)
-    public function iocUpdate(int $id, string $name, string $type, string $value, string $value2, int $parent_id) {
+    public function iocUpdate(int $id, string $name, string $type, $value, $value2, int $parent_id) {
         return $this->db->iocUpdate($id, $name, $type, $value, $value2, $parent_id);
     }
  
@@ -69,8 +69,8 @@ class Web {
     }
  
     // change hidden status for an entry
-    public function setHide(int $id, bool $hidden) {
-        return $this->db->setHide($id, $hidden);
+    public function setHide(string $name, int $ioc_id, bool $hidden) {
+        return $this->db->setHide($name, $ioc_id, $hidden);
     }
  
     // change hidden status for a set
