@@ -2,7 +2,8 @@
 /*
 Set of functions to interact with the database
 */
-include_once 'dbInfo.php';
+if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
+include_once ROOT.'/models/dbInfo.php';
 
 class DBConnect {
 

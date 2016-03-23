@@ -2,8 +2,9 @@
 /*
 Privately accessible API functions
 */
-include_once '../controllers/Client.php';
-include_once '../models/DBConnect.php';
+if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
+include_once ROOT.'/controllers/Client.php';
+include_once ROOT.'/models/DBConnect.php';
 
 class Web {
 

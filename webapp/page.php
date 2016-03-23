@@ -1,5 +1,7 @@
 <?php
-include_once('../controllers/Web.php');
+if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
+#echo ROOT.'/controllers/Web.php';
+include_once ROOT.'/controllers/Web.php';
 
 $api = new Web();
 

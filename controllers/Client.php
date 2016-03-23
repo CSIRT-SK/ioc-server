@@ -2,7 +2,8 @@
 /*
 Publicly exposed API functions
 */
-include_once '../models/DBConnect.php';
+if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
+include_once ROOT.'/models/DBConnect.php';
 
 class Client {
     private $params;

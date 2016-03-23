@@ -2,8 +2,8 @@
 /*
 Extensible endpoint for remote API interaction
 */
-
-include_once 'models/DBConnect.php';
+if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
+include_once ROOT.'/models/DBConnect.php';
 
 // all errors encountered during the API call evaluation will be thrown out of the try block
 try{
@@ -24,8 +24,8 @@ try{
     }
     
     // check if controller exists
-    if (file_exists("controllers/{$controller}.php")) {
-        include_once "controllers/{$controller}.php";
+    if (file_exists(ROOT."/controllers/{$controller}.php")) {
+        include_once ROOT."/controllers/{$controller}.php";
     } else {
         throw new Exception('Invalid controller.');
     }
