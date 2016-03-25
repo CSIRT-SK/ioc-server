@@ -30,13 +30,13 @@ class Web {
     }
  
     // inserts new ioc into database and returns its id
-    public function iocAdd(string $name, string $type, $value, $value2, int $parent = 0) {
-        return $this->db->iocAdd($name, $type, $value, $value2, $parent);
+    public function iocAdd(string $name, string $type, $value, int $parent = 0) {
+        return $this->db->iocAdd($name, $type, $value, $parent);
     }
  
     // updates ioc with given id, returns affected rows (0 = id does not exist, 1 = ok)
-    public function iocUpdate(int $id, string $name, string $type, $value, $value2, int $parent_id) {
-        return $this->db->iocUpdate($id, $name, $type, $value, $value2, $parent_id);
+    public function iocUpdate(int $id, string $name, string $type, $value, int $parent_id) {
+        return $this->db->iocUpdate($id, $name, $type, $value, $parent_id);
     }
  
     // returns array of hidden indicators

@@ -45,7 +45,7 @@ class DBConnect {
     
     public function iocFetchList() {
         // fetch all indicator entries from the `indicators` table
-        $sql = 'SELECT `id`, `name`, `type`, `value`, `value2`, `parent` '.
+        $sql = 'SELECT `id`, `name`, `type`, `value`, `parent` '.
                'FROM `indicators` '.
                'WHERE `hidden` = 0;';
         
@@ -73,7 +73,7 @@ class DBConnect {
 
     public function iocFetchHidden() {
         // fetch all indicator entries from the `indicators` table
-        $sql = 'SELECT `id`, `name`, `type`, `value`, `value2`, `parent` '.
+        $sql = 'SELECT `id`, `name`, `type`, `value`, `parent` '.
                'FROM `indicators` '.
                'WHERE `hidden` = 1;';
         
@@ -101,7 +101,7 @@ class DBConnect {
     
     public function iocFetchId($id) {
         // fetch one indicator from the `indicators` table
-        $sql = 'SELECT `id`, `name`, `type`, `value`, `value2`, `parent` '.
+        $sql = 'SELECT `id`, `name`, `type`, `value`, `parent` '.
                'FROM `indicators` '.
                'WHERE `id` = ? AND `hidden` = 0;';
         
@@ -123,21 +123,20 @@ class DBConnect {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
     
-    public function iocAdd($name, $type, $value, $value2, $parent_id) {
+    public function iocAdd($name, $type, $value, $parent_id) {
         // add new indicator to the `indicators` table
         // table structure: id name type value value2
         // returns the newly generated id
         if ($value == '') $value = NULL;
-        if ($value2 == '') $value2 = NULL;
         
         $sql = 'INSERT INTO `indicators` '.
-               '(`name`, `type`, `value`, `value2`, `parent`) '.
-               'VALUES (?, ?, ?, ?, ?);';
+               '(`name`, `type`, `value`, `parent`) '.
+               'VALUES (?, ?, ?, ?);';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
-        if (!$stmt->bind_param('ssssi', $name, $type, $value, $value2, $parent_id)) 
+        if (!$stmt->bind_param('sssi', $name, $type, $value, $parent_id)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())
@@ -149,20 +148,19 @@ class DBConnect {
         return $this->lastInsertId();
     }
     
-    public function iocUpdate($id, $name, $type, $value, $value2, $parent_id) {
+    public function iocUpdate($id, $name, $type, $value, $parent_id) {
         // edit an existing indicator in the `indicators` table
         // table structure: id name type value value2
         if ($value == '') $value = NULL;
-        if ($value2 == '') $value2 = NULL;
         
         $sql = 'UPDATE `indicators` '.
-               'SET `name` = ?, `type` = ?, `value` = ?, `value2` = ?, `parent` = ? '.
+               'SET `name` = ?, `type` = ?, `value` = ?, `parent` = ? '.
                'WHERE `id` = ?;';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
-        if (!$stmt->bind_param('ssssii', $name, $type, $value, $value2, $parent_id, $id)) 
+        if (!$stmt->bind_param('sssii', $name, $type, $value, $parent_id, $id)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())
