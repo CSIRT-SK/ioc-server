@@ -1,0 +1,7 @@
+<div>{{data}}</div>
+<hr>
+<ul>
+    {{tree.name}}
+    <script>console.log(tree.children)</script>
+    <li ng-repeat="data in tree.children track by $index" ng-include="'views/treeTemplate.html'">{{$index}}</li>
+</ul>
