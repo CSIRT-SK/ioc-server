@@ -4,22 +4,16 @@ Publicly exposed API functions
 */
 if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
 include_once ROOT.'/models/DBConnect.php';
+include_once ROOT.'/controllers/AbstractController.php';
 
-class Client {
-    private $params;
-    
-    public function __construct($params) {
-        $this->params = $params;
-    }
+class Client extends AbstractController {
     
     public function requestAction() {
     // returns all entries in a set
         $this->checkParams('name');
         
-        $db = new DBConnect();
-        
         // fetch all IOCs in DB
-        $result = $db->iocFetchList();
+        $result = $this->db->iocFetchList();
         $iocList = $result;
         
         foreach ($iocList as $key => &$entry) {
@@ -28,13 +22,11 @@ class Client {
             unset($entry['parent']);
         }
         
-        $results = $db->setFetchName($this->params['name']);
+        $results = $this->db->setFetchName($this->params['name']);
         //echo var_export($iocList);
         foreach ($results as $row) {
             $root[] = $iocList[$row['ioc_id']];
         }
-        
-        $db->close();
         
         return $root;
     }
@@ -77,30 +69,9 @@ class Client {
                 throw new Exception('Indicator entry missing entries: ' . $missing);
         }
 
-        $db = new DBConnect();
-        
-        $result = $db->repAddMulti($report);
-        
-        $db->close();
+        $result = $this->db->repAddMulti($report);
         
         return ['added' => $result];
-    }
-    
-    private function checkParams(...$entries) {
-        $missingParams = $this->checkArrayEntries($this->params, ...$entries);
-        if ($missingParams != null)
-            throw new Exception('Action requires parameters: ' . $missingParams);
-    }
-    
-    private function checkArrayEntries($array, ...$entries) {
-    // check if params are set
-        $missing = '';
-        foreach ($entries as $e) {
-            if (!isset($array[$e]))
-                $missing .= $e . ', ';
-        }
-        if ($missing != '')
-            return rtrim($missing, ', ');
     }
 }
 ?>

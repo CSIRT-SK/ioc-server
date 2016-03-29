@@ -1,23 +1,81 @@
-app.factory('IocService', ['$http', '$q', function($http, $q) {
+app.factory('IocService', ['ApiCall', function(ApiCall) {
     var service = {};
-    service.api = 'https://192.168.1.104/ioc-server/api.php';
-    service.call = function(name) {
-        this.data = {
+
+    service.iocTypes = function() {
+        var data = {
+            controller: 'ioc',
+            action: 'getTypes'
+        };
+        return ApiCall(data);
+    }
+    
+    service.listAvailable = function() {
+        var data = {
+            controller: 'ioc',
+            action: 'listAvailable'
+        };
+        return ApiCall(data);
+    }
+    
+    service.listHidden = function() {
+        var data = {
+            controller: 'ioc',
+            action: 'listHidden'
+        };
+        return ApiCall(data);
+    }
+    
+    service.get = function(id) {
+        var data = {
+            controller: 'ioc',
+            action: 'get',
+            id: id
+        };
+        return ApiCall(data);
+    }
+    
+    service.add = function(ioc) {
+        var data = {
+            controller: 'ioc',
+            action: 'add',
+            name: ioc.name,
+            type: ioc.type,
+            value: ioc.value,
+            parent: ioc.parent
+        };
+        return ApiCall(data);
+    }
+    
+    service.update = function(id, ioc) {
+        var data = {
+            controller: 'ioc',
+            action: 'update',
+            id: id,
+            name: ioc.name,
+            type: ioc.type,
+            value: ioc.value,
+            parent: ioc.parent
+        };
+        return ApiCall(data);
+    }
+    
+    service.hide = function(id, hidden) {
+        var data = {
+            controller: 'ioc',
+            action: 'hide',
+            id: id,
+            hidden: hidden
+        };
+        return ApiCall(data);
+    }
+    
+    service.test = function() {
+        var data = {
             controller: 'client',
             action: 'request',
-            name: name
+            name: 'setname'
         };
-        return $http.post(this.api, this.data, this.config).then(function success(response) {
-            return $q(function(resolve, reject){
-                if (response.data.success) {
-                    resolve(response.data.data);
-                } else {
-                    reject(response.data.errormsg);
-                }
-            });
-        }, function error(response) {
-            return 'Internal Error';
-        });
-    }
+        return ApiCall(data);
+    }    
     return service;
 }]);

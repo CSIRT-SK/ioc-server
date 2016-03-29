@@ -1,0 +1,100 @@
+<div class="container-fluid">
+    <div class="alert-box-float">
+        <uib-alert ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout=5000>{{alert.msg}}</uib-alert>
+    </div>
+    <div class="row">
+        <uib-tabset>
+            <uib-tab index=0 heading="IOCs in database">
+                <div class="panel panel-default panel-body">
+                    <div class="row"><!-- list panel controls -->
+                        <div class="col-xs-9">
+                            <div class="input-group">
+                                <span class="input-group-addon"><span class=" glyphicon glyphicon-search"></span></span>
+                                <input type="text" class="form-control" ng-model="iocTable.search" placeholder="Name, type, value"></input>
+                            </div>
+                        </div>
+                        <div class="col-xs-3">
+                            <div class="input-group pull-right">
+                                <button type="button" class="btn btn-success" ng-click="newIoc()">
+                                    <span class="glyphicon glyphicon-plus"></span> New IOC
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-hover table-condensed">
+                        <thead><!-- list table head -->
+                            <tr>
+                                <th ng-repeat="col in ['name', 'type', 'value']">
+                                    <a href="#/ioc" ng-click="orderBy(col)">
+                                        <span class="text-capitalize">{{col}}</span>
+                                        <span ng-show="iocTable.sort.col == col && iocTable.sort.reverse" class="glyphicon glyphicon-triangle-top small"></span>
+                                        <span ng-show="iocTable.sort.col == col && !iocTable.sort.reverse" class="glyphicon glyphicon-triangle-bottom small"></span>
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody><!-- list table body -->
+                            <tr ng-repeat="ioc in iocList | orderBy:iocTable.sort.col:iocTable.sort.reverse | filter:iocTable.search">
+                                <td class="col-sm-3">{{ioc.name}}</td>
+                                <td class="col-sm-2">{{ioc.type}}</td>
+                                <td>
+                                    <span ng-class="{'text-muted': ioc.value == ''}">{{ioc.value | blank}}</span>
+                                    <div class="btn-group pull-right">
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="detail(ioc.id)" uib-tooltip="Details">
+                                            <span class="glyphicon glyphicon-menu-hamburger"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-default btn-xs" ng-click="edit(ioc.id)" uib-tooltip="Edit">
+                                            <span class="glyphicon glyphicon-pencil"></span>
+                                        </button>
+                                        <button type="button" class="btn btn-danger btn-xs" ng-click="del(ioc.id)" uib-tooltip="Delete">
+                                            <span class="glyphicon glyphicon-trash"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </uib-tab>
+            <uib-tab index=1 heading="Removed IOCs">
+                <div class="panel panel-default panel-body">
+                    <div class="row"><!-- del panel controls -->
+                        <div class="col-xs-9">
+                            <div class="input-group">
+                                <span class="input-group-addon"><span class=" glyphicon glyphicon-search"></span></span>
+                                <input type="text" class="form-control" ng-model="delTable.search" placeholder="Name, type, value"></input>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-hover table-condensed">
+                        <thead><!-- del table head -->
+                            <tr>
+                                <th ng-repeat="col in ['name', 'type', 'value']">
+                                    <a href="#/ioc" ng-click="orderBy(col)">
+                                        <span class="text-capitalize">{{col}}</span>
+                                        <span ng-show="delTable.sort.col == col && delTable.sort.reverse" class="glyphicon glyphicon-triangle-top small"></span>
+                                        <span ng-show="delTable.sort.col == col && !delTable.sort.reverse" class="glyphicon glyphicon-triangle-bottom small"></span>
+                                    </a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody><!-- del table body -->
+                            <tr ng-repeat="ioc in iocDelList | orderBy:delTable.sort.col:delTable.sort.reverse | filter:delTable.search">
+                                <td class="col-sm-3">{{ioc.name}}</td>
+                                <td class="col-sm-2">{{ioc.type}}</td>
+                                <td>
+                                    <span ng-class="{'text-muted': ioc.value == ''}">{{ioc.value | blank}}</span>
+                                    <div class="btn-group pull-right">
+                                        <button type="button" class="btn btn-primary btn-xs" ng-click="res(ioc.id)"uib-tooltip="Restore">
+                                            <span class="glyphicon glyphicon-share-alt"></span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </uib-tab>
+        </uib-tabset>
+    </div>
+</div>

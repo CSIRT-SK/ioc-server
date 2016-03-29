@@ -1,9 +1,23 @@
 <?php
+define('DEBUG', true);
 /*
 Extensible endpoint for remote API interaction
 */
 if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
 include_once ROOT.'/models/DBConnect.php';
+
+if (!DEBUG) {
+    error_reporting(0);
+    register_shutdown_function('shutdownCheck');
+}
+function shutdownCheck() {
+    if (error_get_last() !== null) {
+        $result = array();
+        $result['success'] = false;
+        $result['errormsg'] = 'Internall error';
+        echo json_encode($result, JSON_PRETTY_PRINT);
+    }
+}
 
 // all errors encountered during the API call evaluation will be thrown out of the try block
 try{

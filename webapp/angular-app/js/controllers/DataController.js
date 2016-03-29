@@ -1,11 +1,11 @@
 app.controller('DataController', ['$scope', 'IocService', function($scope, IocService) {
     $scope.data = 'data';
-    IocService.call('setname').then(function success(response) {
+    IocService.test().then(function success(data) {
         $scope.tree = {
             name: 'setname',
-            children: response
+            children: data
         };
-    }, function error(response) {
-        $scope.error = response;
+    }, function error(errormsg) {
+        $scope.error = errormsg;
     });
 }]);

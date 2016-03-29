@@ -1,0 +1,49 @@
+@media (min-width: 1200px) {
+    .container{
+        max-width: 1000px;
+    }
+}
+
+html, body {
+    background-color: #eee;
+    height: 100%;
+}
+
+body .container {
+    background-color: #fff;
+}
+
+.navbar {
+    margin-bottom: 0px;
+}
+
+.view {
+    margin-top: -52px;
+    padding-top: 67px;
+    min-height: 100%;
+    height: auto;
+    height: 100%;
+}
+
+/*panel inside tab pane*/
+.tab-pane .panel-default {
+    border-top: none;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.modal-open {
+    overflow: auto;
+}
+
+.small-dialog {
+    top: 10%;
+}
+
+.alert-box-float {
+    z-index: 1;
+    position: fixed;
+    right: 10px;
+    top: 60px;
+    float: right;
+}

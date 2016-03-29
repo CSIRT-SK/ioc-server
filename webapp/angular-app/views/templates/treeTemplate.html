@@ -1,0 +1,4 @@
+{{data.name}}
+<ul>
+    <li ng-repeat="data in data.children track by $index" ng-include="'views/templates/treeTemplate.html'"></li>
+</ul>
