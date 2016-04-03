@@ -39,6 +39,11 @@ class Ioc extends Web {
         return ['changed' => $this->db->iocUpdate($this->params['id'], $this->params['name'], $this->params['type'], $this->params['value'], $this->params['parent'])];
     }
     
+    public function changeParentAction() {
+        $this->checkParams('id', 'parent');
+        return ['changed' => $this->db->iocUpdateParent($this->params['id'], $this->params['parent'])];
+    }
+    
     public function hideAction() {
         $this->checkParams('id', 'hidden');
         return ['changed' => $this->db->iocSetHidden($this->params['id'], $this->params['hidden'])];

@@ -1,22 +1,3 @@
-@media (min-width: 1200px) {
-    .container{
-        max-width: 1000px;
-    }
-}
-
-html, body {
-    background-color: #eee;
-    height: 100%;
-}
-
-body .container {
-    background-color: #fff;
-}
-
-.navbar {
-    margin-bottom: 0px;
-}
-
 .view {
     margin-top: -52px;
     padding-top: 67px;
@@ -25,11 +6,25 @@ body .container {
     height: 100%;
 }
 
+.top-buffer {
+    margin-top: 15px;
+}
+
 /*panel inside tab pane*/
-.tab-pane .panel-default {
+.tab-pane > .panel-default {
     border-top: none;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
+}
+
+.table {
+    table-layout: fixed;
+}
+
+.table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .modal-open {
@@ -40,10 +35,71 @@ body .container {
     top: 10%;
 }
 
-.alert-box-float {
-    z-index: 1;
+.alert-box {
+    z-index: 999;
     position: fixed;
     right: 10px;
     top: 60px;
-    float: right;
+}
+
+.alert-hor {
+    margin-left: 10px;
+}
+
+.well {
+    overflow: auto;
+    white-space: nowrap;
+    margin: 0;
+}
+
+ul.tree {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+    position: relative;
+}
+
+li.tree-node {
+    list-style-type: none;
+    border-left: 2px solid #777;
+    margin-left: 1em;
+}
+
+li.tree-node div.tree-node {
+    padding-left: 0.6em;
+    position: relative;
+}
+
+li.tree-node div.tree-node::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -2px;
+    bottom: 40%;
+    width: 0.75em;
+    border-left: 2px solid #777;
+    border-bottom: 2px solid #777;
+}
+
+ul.tree > li.tree-node:last-child {
+    border-left: 0;
+    padding-left: 2px;
+}
+
+ul.tree > li.tree-node:last-child > div.tree-node::before {
+    border-bottom-left-radius: 0.25em;
+}
+
+.label.label-button, .info-tooltip {
+    cursor: pointer;
+}
+
+.label.label-default.label-button:hover {
+    box-shadow: 0 0 1px 1px #777777;
+}
+.label.label-primary.label-button:hover {
+    box-shadow: 0 0 1px 1px #337ab7;
+}
+.label.label-warning.label-button:hover {
+    box-shadow: 0 0 1px 1px #f0ad4e;
 }

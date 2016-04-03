@@ -1,0 +1,6 @@
+<div class="tree-node">
+    <span class="label label-default label-button" uib-popover-template="'templates/treePopover.html'" popover-popup-delay=0 popover-trigger="outsideClick" popover-placement="right" popover-is-open="tree.open" ng-class="{'label-warning': tree.type == 'and' || tree.type == 'or'}">{{tree.type}}</span> <code>{{tree.name}}</code>
+</div>
+<ul class="tree">
+    <li class="tree-node" ng-repeat="tree in tree.children track by $index" ng-include="'templates/treeTemplate.html'"></li>
+</ul>

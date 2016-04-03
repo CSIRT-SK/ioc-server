@@ -7,7 +7,7 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             action: 'getTypes'
         };
         return ApiCall(data);
-    }
+    };
     
     service.listAvailable = function() {
         var data = {
@@ -15,7 +15,7 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             action: 'listAvailable'
         };
         return ApiCall(data);
-    }
+    };
     
     service.listHidden = function() {
         var data = {
@@ -23,7 +23,7 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             action: 'listHidden'
         };
         return ApiCall(data);
-    }
+    };
     
     service.get = function(id) {
         var data = {
@@ -32,7 +32,7 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             id: id
         };
         return ApiCall(data);
-    }
+    };
     
     service.add = function(ioc) {
         var data = {
@@ -44,7 +44,7 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             parent: ioc.parent
         };
         return ApiCall(data);
-    }
+    };
     
     service.update = function(id, ioc) {
         var data = {
@@ -57,7 +57,17 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             parent: ioc.parent
         };
         return ApiCall(data);
-    }
+    };
+    
+    service.updateParent = function(id, parent) {
+        var data = {
+            controller: 'ioc',
+            action: 'changeParent',
+            id: id,
+            parent: parent
+        };
+        return ApiCall(data);
+    };
     
     service.hide = function(id, hidden) {
         var data = {
@@ -67,15 +77,15 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             hidden: hidden
         };
         return ApiCall(data);
-    }
+    };
     
-    service.test = function() {
+    service.tree = function(name) {
         var data = {
             controller: 'client',
             action: 'request',
-            name: 'setname'
+            name: name
         };
         return ApiCall(data);
-    }    
+    };
     return service;
 }]);

@@ -12,10 +12,6 @@ class Set extends Web {
         return $this->db->setListNames();
     }
     
-    public function listHiddenAction() {
-        return $this->db->setFetchHidden();
-    }
- 
     public function getAction() {
         $this->checkParams('name');
         return $this->db->setFetchName($this->params['name']);
@@ -23,7 +19,13 @@ class Set extends Web {
  
     public function addAction() {
         $this->checkParams('name', 'ioc');
-        return ['id' => $this->db->setAdd($this->params['name'], $this->params['ioc'])];
+        $hidden = $this->db->setIsHidden($this->params['name'], $this->params['ioc'])['ioc_id'];
+        if ($hidden == null) {
+            return ['id' => $this->db->setAdd($this->params['name'], $this->params['ioc'])];
+        } else {
+            $this->db->setHide($this->params['name'], $this->params['ioc'], 0);
+            return ['id' => $hidden];
+        }
     }
     
     public function hideAction() {

@@ -1,0 +1,36 @@
+<div class="modal-header">
+    <h3 class="modal-title">{{action}} IOC</h3>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" name="editForm">
+        <div class="form-group has-feedback" ng-class="{'has-error': !editForm.name.$valid}">
+            <label class="control-label col-sm-3" for="name">Name:</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="name" name="name" ng-model="ioc.name" required>
+                <span ng-show="!editForm.name.$valid" class="glyphicon glyphicon-remove form-control-feedback"></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="control-label col-sm-3" for="type">Type:</label>
+            <div class="col-sm-9">
+                <select class="form-control text-uppercase" id="type" ng-model="ioc.type">
+                    <option ng-repeat="type in types" ng-value="type.type">{{type.type}}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group" ng-show="values[ioc.type].length > 0">
+            <label class="control-label col-sm-3">Values:</label>
+        </div>
+        <div class="form-group has-feedback" ng-repeat="input in values[ioc.type]" ng-class="{'has-error': !editForm.value{{$index}}.$valid}">
+            <label class="control-label col-sm-3" for="value{{$index}}">{{input.name}}:</label>
+            <div class="col-sm-9">
+                <input type="text" class="form-control" id="value{{$index}}" name="value{{$index}}" ng-model="input.value" required>
+                <span ng-show="!editForm.value{{$index}}.$valid" class="glyphicon glyphicon-remove form-control-feedback"></span>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" type="button" ng-click="ok()" ng-disabled="!editForm.$valid">Confirm</button>
+    <button class="btn btn-danger" type="button" ng-click="cancel()">Cancel</button>
+</div>

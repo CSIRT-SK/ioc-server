@@ -1,4 +1,4 @@
-app.controller('IocController', ['$scope', 'IocService', '$uibModal', function($scope, IocService, $uibModal) {
+app.controller('ReportController', ['$scope', 'IocService', '$uibModal', function($scope, IocService, $uibModal) {
     
     // data structures
     $scope.alerts = [];
@@ -27,7 +27,7 @@ app.controller('IocController', ['$scope', 'IocService', '$uibModal', function($
             },
             {
                 title: 'value',
-                width: '45%'
+                width: '50%'
             },
         ]
     };

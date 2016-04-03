@@ -8,21 +8,15 @@
         <dt>Name</dt>
         <dd>{{ioc.name}}</dd>
         <dt>Type</dt>
-        <dd>{{ioc.type}}</dd>
-        <br>
+        <dd class="text-uppercase">{{ioc.type}}</dd>
+        <div ng-show="values.length > 0">
+            <br>
+            <dt>Values:</dt>
+            <dd></dd>
+        </div>
         <div ng-repeat="entry in values">
             <dt>{{entry.name}}</dt>
-            <dd>{{entry.value}}</dd>
-        </div>
-        <div ng-show="hasParent">
-            <br>
-            <dt>Parent</dt>
-            <dd>
-                {{parent.name}}
-                <button type="button" class="btn btn-default btn-xs" ng-click="detail(parent.id)" uib-tooltip="Details">
-                    <span class="glyphicon glyphicon-menu-hamburger"></span>
-                </button>
-            </dd>
+            <dd style="word-wrap: break-word;"><samp>{{entry.value}}</samp></dd>
         </div>
     </dl>
 </div>

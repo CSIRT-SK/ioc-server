@@ -14,10 +14,16 @@ app.constant('pages', [
         template: 'views/ioc.html'
     },
     {
-        name: 'Data',
-        path: '/data',
-        controller: 'DataController',
-        template: 'views/data.html'
+        name: 'Sets',
+        path: '/set',
+        controller: 'SetController',
+        template: 'views/set.html'
+    },
+    {
+        name: 'Reports',
+        path: '/report',
+        controller: 'ReportController',
+        template: 'views/report.html'
     }
 ]);
 
@@ -49,8 +55,7 @@ app.config(function($httpProvider) {
 
 app.config(function($uibTooltipProvider) {
     $uibTooltipProvider.options({
-        appendToBody: true,
-        popupDelay: 500
+        appendToBody: true
     });
 });
 

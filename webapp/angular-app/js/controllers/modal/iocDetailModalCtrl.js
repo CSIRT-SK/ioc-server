@@ -1,9 +1,6 @@
 app.controller('IocDetailModalCtrl', ['$scope', '$filter', '$uibModalInstance', 'data', function($scope, $filter, $uibModalInstance, data) {
-    $scope.ioc = data.list[data.id];
-    $scope.parent = data.list[$scope.ioc.parent];
-    $scope.detail = data.detail;
+    $scope.ioc = data.ioc;
     $scope.types = data.types;
-    $scope.hasParent = typeof($scope.parent) != 'undefined';
     
     var valArray = $filter('split')($scope.ioc.value, '|');
     var nameArray = [];
