@@ -17,9 +17,9 @@ class Report extends Web {
         return $this->db->repFetchId($this->params['id']);
     }
  
-    public function queryAction() {
-        // TODO variable query on the report list, should take query string as parameter
-        return null;
+    public function getTimeRangeAction() {
+        $this->checkParams('from', 'to');
+        return $this->db->repFetchTimeRange($this->params['from'], $this->params['to']);
     }
 }
 ?>

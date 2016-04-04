@@ -4,53 +4,65 @@
     </div>
     <div class="row">
         <div class="panel panel-default panel-body">
-            <div class="row"><!-- list panel controls -->
-                <div class="col-sm-9">
-                    <div class="input-group">
-                        <span class="input-group-addon"><span class=" glyphicon glyphicon-search"></span></span>
-                        <input type="text" class="form-control" ng-model="iocTable.search" placeholder="Name, type, value"></input>
-                    </div>
-                </div>
-                <div class="col-sm-3">
-                    <div class="input-group pull-right">
-                        <button type="button" class="btn btn-success" ng-click="newIoc()">
-                            <span class="glyphicon glyphicon-plus"></span> New IOC
-                        </button>
-                    </div>
-                </div>
-            </div>
             <table class="table table-hover table-condensed">
                 <thead><!-- list table head -->
                     <tr>
-                        <th ng-repeat="col in iocTable.layout" width="{{col.width}}">
-                            <a href="#/report" ng-click="orderBy(iocTable, col.title)">
-                                <span class="text-capitalize">{{col.title}}</span>
-                                <span ng-show="iocTable.sort.col == col.title && iocTable.sort.reverse" class="glyphicon glyphicon-triangle-top small"></span>
-                                <span ng-show="iocTable.sort.col == col.title && !iocTable.sort.reverse" class="glyphicon glyphicon-triangle-bottom small"></span>
+                        <th ng-repeat="col in table.layout" width="{{col.width}}">
+                            <a href="#/report" ng-click="orderBy(table, col)">
+                                <span>{{col.title}}</span>
+                                <span ng-show="table.sort.col.title == col.title && table.sort.reverse" class="glyphicon glyphicon-triangle-top small"></span>
+                                <span ng-show="table.sort.col.title == col.title && !table.sort.reverse" class="glyphicon glyphicon-triangle-bottom small"></span>
                             </a>
+                            <div style="font-weight: initial;">
+                                <input ng-if="col.title != 'Time' && col.title != 'Result'" type="text" ng-model="table.search[col.sort]" class="form-control" placeholder="Filter"></input>
+
+                                <div ng-if="col.title == 'Time'">
+                                    <input class="form-control hidden-input pull-left" type="text" uib-datepicker-popup="''" ng-model="date.start" is-open="date.startOpened" datepicker-options="date.options" show-button-bar="false"></input>
+                                    <input class="form-control hidden-input pull-left" type="text" uib-datepicker-popup="''" ng-model="date.end" is-open="date.endOpened" datepicker-options="date.options" show-button-bar="false"></input>
+                                    <div class="input-group">
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default" ng-click="date.openStart()">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </button>
+                                        </span>
+                                        <input type="text" class="form-control" ng-model="dateRange" style="padding: 6px;"></input>
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-default" ng-click="date.openEnd()">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </button>
+                                        </span>
+                                    </div>
+
+                                </div>
+
+                                <div ng-if="col.title == 'Result'" class="btn-group" data-toggle="buttons-checkbox">
+                                    <button type="button" class="btn btn-success col-xs-6" ng-model="table.search.result" uib-btn-radio="'0'" uncheckable><span class="glyphicon glyphicon-ok"></span></button>
+                                    <button type="button" class="btn btn-danger col-xs-6" ng-model="table.search.result" uib-btn-radio="'1'" uncheckable><span class="glyphicon glyphicon-remove"></span></button>
+                                </div>
+                            </div>
                         </th>
-                        <th width="10%"></th>
                     </tr>
                 </thead>
                 <tbody><!-- list table body -->
-                    <tr ng-repeat="ioc in iocList | orderBy:iocTable.sort.col:iocTable.sort.reverse | filter:iocTable.search">
-                        <td>{{ioc.name}}</td>
-                        <td class="text-uppercase">{{ioc.type}}</td>
+                    <tr ng-repeat="row in reportList | orderBy:table.sort.col.sort:table.sort.reverse | filter:table.search">
+                        <td>{{row.org}}</td>
+                        <td>{{row.device}}</td>
+                        <td>{{row.timestamp * 1000 | date:'dd. MMM yy, HH:mm'}}</td>
+                        <td>{{row.setname}}</td>
                         <td>
-                            <span ng-class="{'text-muted': ioc.value == ''}"><samp>{{ioc.value | blank}}</samp></span>
+                            <div class="row">
+                                <div class="col-sm-9" style="padding-right:0">
+                                    {{row.iocName}}
+                                </div>
+                                <div class="col-sm-3" style="padding-left:0">
+                                    <button type="button" class="btn btn-default btn-xs" ng-click="detail(row.ioc_id)"><span class="glyphicon glyphicon-menu-hamburger"></span></button></span>
+                                </div>
+                            </div>
+                            <span class="pull-right">
                         </td>
                         <td>
-                            <div class="btn-group pull-right">
-                                <button type="button" class="btn btn-default btn-xs" ng-click="detail(ioc.id)">
-                                    <span class="glyphicon glyphicon-menu-hamburger"></span>
-                                </button>
-                                <button type="button" class="btn btn-default btn-xs" ng-click="edit(ioc.id)">
-                                    <span class="glyphicon glyphicon-pencil"></span>
-                                </button>
-                                <button type="button" class="btn btn-danger btn-xs" ng-click="del(ioc.id)">
-                                    <span class="glyphicon glyphicon-trash"></span>
-                                </button>
-                            </div>
+                            <span ng-show="row.result" class="text-danger"><span class="glyphicon glyphicon-remove"></span> FOUND</span>
+                            <span ng-hide="row.result" class="text-success"><span class="glyphicon glyphicon-ok"></span> CLEAR</span>
                         </td>
                     </tr>
                 </tbody>

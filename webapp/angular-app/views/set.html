@@ -26,7 +26,7 @@
                         <div class="well">
                             <span class="pull-right text-muted info-tooltip" uib-tooltip="Click nodes to edit the IOC tree"><span class="glyphicon glyphicon-question-sign"></span></span>
                             <ul class="tree col-sm-10" style="font-size: 120%;">
-                                <span class="label label-primary label-button" uib-popover-template="'templates/treePopover.html'" popover-popup-delay=0 popover-trigger="outsideClick" popover-placement="right" popover-is-open="tree.open">{{tree.name}}</span>
+                                <span class="label label-primary label-button" uib-popover-template="'templates/treePopover.html'" popover-trigger="outsideClick" popover-placement="right" popover-is-open="tree.open">{{tree.name}}</span>
                                 <li class="tree-node" ng-repeat="tree in tree.children track by $index" ng-include="'templates/treeTemplate.html'"></li>
                             </ul>
                         </div>

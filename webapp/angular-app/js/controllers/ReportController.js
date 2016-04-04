@@ -1,53 +1,66 @@
-app.controller('ReportController', ['$scope', 'IocService', '$uibModal', function($scope, IocService, $uibModal) {
+app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetService', 'ReportService', '$uibModal', function($scope, $filter, IocService, SetService, ReportService, $uibModal) {
     
     // data structures
     $scope.alerts = [];
     
-    $scope.iocListRaw = [];
-    $scope.iocDelListRaw = [];
-    $scope.iocList = [];
-    $scope.iocDelList = [];
+    $scope.reportList = [];
+    
+    $scope.iocMap = {};
     
     $scope.iocTypes = [];
     
-    $scope.iocTable = {
+    $scope.table = {
         sort: {
-            col: 'name',
-            reverse: false
+            col: {
+                title: 'Time',
+                sort: 'timestamp'
+            },
+            reverse: true,
         },
-        search: '',
+        search: {},
         layout: [
             {
-                title: 'name',
-                width: '25%'
+                title: 'Organization',
+                sort: 'org',
+                width: '20%',
             },
             {
-                title: 'type',
-                width: '15%'
+                title: 'Device',
+                sort: 'device',
+                width: '20%',
             },
             {
-                title: 'value',
-                width: '50%'
+                title: 'Time',
+                sort: 'timestamp',
+                width: '20%',
             },
-        ]
+            {
+                title: 'Set',
+                sort: 'setname',
+                width: '20%',
+            },
+            {
+                title: 'Indicator',
+                sort: 'iocName',
+                width: '20%',
+            },
+            {
+                title: 'Result',
+                sort: 'result',
+                width: '10%',
+            },
+        ],
     };
 
-    $scope.delTable = {
-        sort: {
-            col: 'name',
-            reverse: false
-        },
-        search: '',
-        layout: $scope.iocTable.layout
-    };
-    
     // ui functions
     $scope.orderBy = function(table, col) {
-        if (col == table.sort.col) {
+        if (col.title == table.sort.col.title) {
             table.sort.reverse = !table.sort.reverse;
         } else {
-            table.sort.col = col;
-            table.sort.reverse = false;
+            table.sort.col.title = col.title;
+            table.sort.col.sort = col.sort;
+            if (col.title == 'Time') table.sort.reverse = true;
+            else table.sort.reverse = false;
         }
     };
     
@@ -67,7 +80,7 @@ app.controller('ReportController', ['$scope', 'IocService', '$uibModal', functio
             resolve: {
                 data: function() {
                     return {
-                        ioc: $scope.iocListRaw[id],
+                        ioc: $scope.iocMap[id],
                         types: $scope.iocTypes
                     };
                 }
@@ -75,121 +88,54 @@ app.controller('ReportController', ['$scope', 'IocService', '$uibModal', functio
         });
     }
     
-    $scope.edit = function(id) {
-        var modalInstance = $uibModal.open({
-            templateUrl: 'templates/modal/iocEditTemplate.html',
-            controller: 'IocEditModalCtrl',
-            resolve: {
-                data: function() {
-                    return {
-                        ioc: $scope.iocListRaw[id],
-                        types: $scope.iocTypes,
-                        action: 'Edit'
-                    };
-                }
-            }
-        });
-        
-        modalInstance.result.then(function success(ioc) {
-            IocService.update(id, ioc).then(function success(data) {
-                $scope.loadAvailable();
-                $scope.addAlert('success', 'IOC data updated');
-            }, function error(msg) {
-                $scope.loadAvailable();
-                console.log('[Edit IOC] Error: ' + msg);
-                $scope.addAlert('danger', 'Error: ' + msg);
-            });
-        });
-    }
+    // date picker
+    $scope.dateRange = "";
+    $scope.date = {
+        start: new Date(0),
+        end: new Date()
+    };
     
-    $scope.newIoc = function() {
-        var modalInstance = $uibModal.open({
-            templateUrl: 'templates/modal/iocEditTemplate.html',
-            controller: 'IocEditModalCtrl',
-            resolve: {
-                data: function() {
-                    return {
-                        ioc: {
-                            type: 'file-name',
-                            value: '|',
-                            parent: 0
-                        },
-                        types: $scope.iocTypes,
-                        action: 'New'
-                    };
-                }
-            }
-        });
-        
-        modalInstance.result.then(function success(ioc) {
-            IocService.add(ioc).then(function success(data) {
-                $scope.loadAvailable();
-                $scope.addAlert('success', 'New IOC added');
-            }, function error(msg) {
-                console.log('[New IOC] Error: ' + msg);
-                $scope.addAlert('danger', 'Error: ' + msg);
-            });
-        });
-    }
+    $scope.date.startOpened = false;
+    $scope.date.endOpened = false;
     
-    $scope.del = function(id) {
-        var modalInstance = $uibModal.open({
-            templateUrl: 'templates/modal/iocDeleteTemplate.html',
-            controller: 'IocDeleteModalCtrl',
-            size: 'sm',
-            windowTopClass: 'small-dialog',
-            resolve: {
-                data: function() {
-                    return {
-                        ioc: $scope.iocListRaw[id]
-                    };
-                }
-            }
-        });
-        
-        modalInstance.result.then(function success() {
-            IocService.hide(id, 1).then(function success(data) {
-                $scope.loadAvailable();
-                $scope.loadDeleted();
-                $scope.addAlert('success', 'IOC removed');
-            }, function error(msg) {
-                console.log('[Delete IOC] Error: ' + msg);
-                $scope.addAlert('danger', 'Error: ' + msg);
-            });
-        });
-    }
+    $scope.date.openStart = function() {
+        $scope.date.startOpened = true;
+        $scope.date.endOpened = false;
+    };
     
-    $scope.res = function(id) {
-        IocService.hide(id, 0).then(function success(data) {
-            $scope.loadAvailable();
-            $scope.loadDeleted();
-            $scope.addAlert('success', 'IOC restored');
-        }, function error(msg) {
-            console.log('[Restore IOC] Error: ' + msg);
-            $scope.addAlert('danger', 'Error: ' + msg);
-        });
-    }
+    $scope.date.openEnd = function() {
+        $scope.date.startOpened = false;
+        $scope.date.endOpened = true;
+    };
+    
+    $scope.date.options = {
+        maxDate: new Date(),
+        showWeeks: false
+    };
+    
+    $scope.$watch('date', function(newVal) {
+        $scope.dateRange = $filter('date')(newVal.start, 'd.M.yy') + ' - ' + $filter('date')(newVal.end, 'd.M.yy');
+        $scope.loadReports();
+    }, true);
     
     // data loaders
-    $scope.loadAvailable = function() {
-        IocService.listAvailable().then(function success(data) {
-            $scope.iocListRaw = data;
-            $scope.iocList = Object.keys(data).map(function(k) {
-                var d = data[k];
-                if (d.value === null) d.value = '';
-                return d;
-            });
+    $scope.loadIoc = function(id, reportId) {
+        if ($scope.iocMap.hasOwnProperty(id))
+            $scope.reportList[reportId].iocName = $scope.iocMap[id].name;
+            
+        IocService.get(id).then(function success(data) {
+            if (data.value === null) data.value = '';
+            $scope.iocMap[id] = data;
+            $scope.reportList[reportId].iocName = data.name;
         });
     };
     
-    $scope.loadDeleted = function() {
-        IocService.listHidden().then(function success(data) {
-            $scope.iocDelListRaw = data;
-            $scope.iocDelList = Object.keys(data).map(function(k) {
-                var d = data[k];
-                if (d.value === null) d.value = '';
-                return d;
-            });
+    $scope.loadReports = function() {
+        ReportService.timeRange($scope.date.start, $scope.date.end).then(function success(data){
+            $scope.reportList = data;
+            for (var i = 0; i < $scope.reportList.length; i++) {
+                $scope.loadIoc($scope.reportList[i].ioc_id, i);
+            }
         });
     };
     
@@ -199,8 +145,35 @@ app.controller('ReportController', ['$scope', 'IocService', '$uibModal', functio
         });
     };
     
+    $scope.$watch('table.search.result', function(newVal) {
+        if (newVal == null) $scope.table.search.result = '';
+    });
+    
     // init
-    $scope.loadAvailable();
-    $scope.loadDeleted();
+    $scope.loadReports();
     $scope.loadTypes();
+}]);
+
+app.factory('ReportService', ['ApiCall', function(ApiCall) {
+    var service = {};
+
+    service.listAll = function() {
+        var data = {
+            controller: 'report',
+            action: 'listAll'//action: 'getTimeRange'
+        };
+        return ApiCall(data);
+    };
+    
+    service.timeRange = function(from, to) {
+        var data = {
+            controller: 'report',
+            action: 'getTimeRange',
+            from: from / 1000,
+            to: to / 1000
+        }
+        return ApiCall(data);
+    };
+    
+    return service;
 }]);

@@ -19,12 +19,12 @@ class Set extends Web {
  
     public function addAction() {
         $this->checkParams('name', 'ioc');
-        $hidden = $this->db->setIsHidden($this->params['name'], $this->params['ioc'])['ioc_id'];
-        if ($hidden == null) {
+        $exists = $this->db->setExists($this->params['name'], $this->params['ioc'])['ioc_id'];
+        if ($exists == null) {
             return ['id' => $this->db->setAdd($this->params['name'], $this->params['ioc'])];
         } else {
             $this->db->setHide($this->params['name'], $this->params['ioc'], 0);
-            return ['id' => $hidden];
+            return ['id' => $exists];
         }
     }
     

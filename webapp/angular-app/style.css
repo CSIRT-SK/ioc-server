@@ -27,6 +27,12 @@
     text-overflow: ellipsis;
 }
 
+.table td * {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .modal-open {
     overflow: auto;
 }
@@ -102,4 +108,20 @@ ul.tree > li.tree-node:last-child > div.tree-node::before {
 }
 .label.label-warning.label-button:hover {
     box-shadow: 0 0 1px 1px #f0ad4e;
+}
+
+.hidden-input {
+    width: 0;
+    padding: 0;
+    border: 0;
+}
+
+.hidden-input
+
+.popover {
+    max-width: 600px;
+}
+
+.popover-content {
+    padding: 9px 10px;
 }

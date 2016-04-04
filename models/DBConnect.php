@@ -124,7 +124,7 @@ class DBConnect {
         // fetch one indicator from the `indicators` table
         $sql = 'SELECT `id`, `name`, `type`, `value`, `parent` '.
                'FROM `indicators` '.
-               'WHERE `id` = ? AND `hidden` = 0;';
+               'WHERE `id` = ?;';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
@@ -273,11 +273,11 @@ class DBConnect {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function setIsHidden($name, $ioc_id) {
+    public function setExists($name, $ioc_id) {
         // fetch an indicator set from the `sets` table
         $sql = 'SELECT `name`, `ioc_id` '.
                'FROM `sets` '.
-               'WHERE `name` = ? AND `ioc_id` = ? AND `hidden` = 1;';
+               'WHERE `name` = ? AND `ioc_id` = ?;';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
@@ -395,6 +395,29 @@ class DBConnect {
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
         if (!$stmt->bind_param('i', $id)) 
+            throw new Exception('Error binding parameters [' . $stmt->error . ']');
+        
+        if (!$stmt->execute())
+            throw new Exception('Error executing statement [' . $stmt->error . ']');
+        
+        if (!$result = $stmt->get_result())
+            throw new Exception('Error getting result [' . $stmt->error . ']');
+
+        if (!$stmt->close())
+            throw new Exception('Error closing statement [' . $stmt->error . ']');
+
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    public function repFetchTimeRange($from, $to) {
+        $sql = 'SELECT `id`, `org`, `device`, UNIX_TIMESTAMP(`timestamp`) AS `timestamp`, `setname`, `ioc_id`, `result` '.
+               'FROM `reports` '.
+               'WHERE `timestamp` >= FROM_UNIXTIME(?) AND `timestamp` <= FROM_UNIXTIME(?);';
+        
+        if (!$stmt = $this->mysqli->prepare($sql))
+            throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
+        
+        if (!$stmt->bind_param('ii', $from, $to)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())
