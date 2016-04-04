@@ -37,7 +37,7 @@
                         <tbody><!-- list table body -->
                             <tr ng-repeat="ioc in iocList | orderBy:iocTable.sort.col:iocTable.sort.reverse | filter:iocTable.search">
                                 <td>{{ioc.name}}</td>
-                                <td class="text-uppercase">{{ioc.type}}</td>
+                                <td><code class="text-uppercase">{{ioc.type}}</code></td>
                                 <td>
                                     <span ng-class="{'text-muted': ioc.value == ''}"><samp>{{ioc.value | blank}}</samp></span>
                                 </td>
@@ -85,7 +85,7 @@
                         <tbody><!-- del table body -->
                             <tr ng-repeat="ioc in iocDelList | orderBy:delTable.sort.col:delTable.sort.reverse | filter:delTable.search">
                                 <td>{{ioc.name}}</td>
-                                <td class="text-uppercase">{{ioc.type}}</td>
+                                <td><code class="text-uppercase">{{ioc.type}}</code></td>
                                 <td>
                                     <span ng-class="{'text-muted': ioc.value == ''}"><samp>{{ioc.value | blank}}</samp></span>
                                 </td>

@@ -100,6 +100,14 @@ ul.tree > li.tree-node:last-child > div.tree-node::before {
     cursor: pointer;
 }
 
+.label.label-button.label-code {
+    padding-left: 0.2em;
+}
+
+.label-code code {
+    margin-right: 0.2em;
+}
+
 .label.label-default.label-button:hover {
     box-shadow: 0 0 1px 1px #777777;
 }

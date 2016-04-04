@@ -27,8 +27,8 @@
         <tbody>
             <tr ng-repeat="ioc in iocList | orderBy:iocTable.sort.col:iocTable.sort.reverse | filter:iocTable.search">
                 <td>{{ioc.name}}</td>
-                <td>{{ioc.type}}</td>
-                <td>{{ioc.value}}</td>
+                <td><code class="text-uppercase">{{ioc.type}}</code></td>
+                <td><span ng-class="{'text-muted': ioc.value == ''}"><samp>{{ioc.value | blank}}</samp></span></td>
                 <td>
                     <span class="pull-right">
                         <button ng-if="ioc.parent == 0" class="btn btn-success btn-xs" ng-click="ok(ioc.id)"><span class="glyphicon glyphicon-plus"></span></button>
