@@ -2,12 +2,6 @@ var app = angular.module('iocApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap']);
 
 app.constant('pages', [
     {
-        name: 'Home',
-        path: '/',
-        controller: 'HomeController',
-        template: 'views/home.html'
-    },
-    {
         name: 'IOC',
         path: '/ioc',
         controller: 'IocController',
@@ -24,6 +18,12 @@ app.constant('pages', [
         path: '/report',
         controller: 'ReportController',
         template: 'views/report.html'
+    },
+    {
+        name: 'Backup',
+        path: '/backup',
+        controller: 'BackupController',
+        template: 'views/backup.html'
     }
 ]);
 

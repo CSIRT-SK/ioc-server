@@ -1,0 +1,30 @@
+<div class="container-fluid">
+	<div class="alert-box">
+		<uib-alert class="pull-right alert-hor" ng-repeat="alert in alerts"
+			type="{{alert.type}}" close="closeAlert($index)"
+			dismiss-on-timeout=5000>{{alert.msg}}</uib-alert>
+	</div>
+	<div class="row">
+		<div class="col-sm-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">Indicators</div>
+				<div class="panel-body" backup-form type="'ioc'" formats="['json', 'csv']">
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">Sets</div>
+				<div class="panel-body" backup-form type="'set'" formats="['json']">
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-4">
+			<div class="panel panel-default">
+				<div class="panel-heading">Reports</div>
+				<div class="panel-body" backup-form type="'rep'" formats="['json', 'csv']">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

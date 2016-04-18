@@ -19,6 +19,10 @@ abstract class AbstractController {
         $this->db->close();
     }
     
+    public function setParams($params) {
+    	$this->params = $params;
+    }
+    
     protected function checkParams(...$entries) {
         $missingParams = $this->checkArrayEntries($this->params, ...$entries);
         if ($missingParams != null)
