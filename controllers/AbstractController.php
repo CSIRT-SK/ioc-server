@@ -21,6 +21,7 @@ abstract class AbstractController {
     
     public function setParams($params) {
     	$this->params = $params;
+    	return $this;
     }
     
     protected function checkParams(...$entries) {

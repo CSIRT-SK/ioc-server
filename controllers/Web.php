@@ -9,7 +9,8 @@ include_once ROOT.'/models/DBConnect.php';
 abstract class Web extends AbstractController {
 
     public function __construct($params) {
-        // TODO key check
+        if (!isset($_SERVER['SSL_CLIENT_S_DN_CN']) || $_SERVER['SSL_CLIENT_S_DN_CN'] != 'IOC Checker admin')
+        	throw new Exception('Access denied');
         parent::__construct($params);
     }
 

@@ -14,7 +14,11 @@ class Client extends AbstractController {
         
         // fetch all IOCs in DB
         $result = $this->db->iocFetchList();
-        $iocList = $result;
+        $iocList = array_map(function ($e) {
+        	$e['value'] = preg_replace('/`(.)/', '$1', preg_split("/(?<!`)\|/", $e['value']));
+        	array_pop($e['value']);
+        	return $e;
+        }, $result);
         
         foreach ($iocList as $key => &$entry) {
             if ($entry['parent'] != 0)
