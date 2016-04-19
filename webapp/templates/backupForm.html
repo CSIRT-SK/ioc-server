@@ -1,0 +1,30 @@
+<form action="backup.php" method="post" enctype="multipart/form-data">
+	<input type="hidden" name="type" value="{{type}}">
+	<div class="form-group">
+		<label>Export:</label>
+		<div class="input-group">
+			<select name="eformat" class="form-control">
+				<option ng-repeat="format in formats" value="{{format}}">{{format}}</option>
+			</select>
+			<div class="input-group-btn">
+				<button type="submit" name="action" value="export" class="btn btn-primary">Export</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="form-group">
+		<label>Import:</label>
+		<input type="file" name="file">
+	</div>
+	<div class="form-group">
+		<div class="input-group">
+		<select name="iformat" class="form-control">
+			<option ng-repeat="format in formats" value="{{format}}">{{format}}</option>
+		</select>
+			<div class="input-group-btn">
+				<button type="submit" name="action" value="import" class="btn btn-primary">Import</button>
+			</div>
+		</div>
+	</div>
+	
+</form>
