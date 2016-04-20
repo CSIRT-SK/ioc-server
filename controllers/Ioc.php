@@ -16,6 +16,10 @@ class Ioc extends Web {
         return $this->db->iocFetchList();
     }
     
+    public function  listUnusedAction() {
+    	return $this->db->iocFetchUnused();
+    }
+    
     public function listHiddenAction() {
         return $this->db->iocFetchHidden();
     }

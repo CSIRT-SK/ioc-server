@@ -244,6 +244,26 @@ class DBConnect {
         return $res;
     }
     
+    public function iocFetchUnused() {
+    	$sql = 'SELECT `indicators`.* '.
+    		   'FROM `indicators` LEFT OUTER JOIN `sets` ON `indicators`.`id` = `sets`.`ioc_id` '.
+    		   'WHERE `indicators`.`parent` = 0 AND (`sets`.`hidden` IS NULL OR `sets`.`hidden` = 1);';
+    	
+	if (!$stmt = $this->mysqli->prepare($sql))
+    	throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
+    	
+    if (!$stmt->execute())
+    	throw new Exception('Error executing statement [' . $stmt->error . ']');
+    
+    if (!$result = $stmt->get_result())
+    	throw new Exception('Error getting result [' . $stmt->error . ']');
+    
+    if (!$stmt->close())
+    	throw new Exception('Error closing statement [' . $stmt->error . ']');
+    
+    return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
 // ========== IOC SET ==========
 
     public function setListNames() {

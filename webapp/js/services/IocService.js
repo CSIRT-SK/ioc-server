@@ -25,6 +25,14 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
         return ApiCall(data);
     };
     
+    service.listUnused = function() {
+        var data = {
+            controller: 'ioc',
+            action: 'listUnused'
+        };
+        return ApiCall(data);
+    };
+    
     service.get = function(id) {
         var data = {
             controller: 'ioc',
