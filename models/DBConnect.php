@@ -66,7 +66,7 @@ class DBConnect {
     
     public function iocFetchList() {
         // fetch all indicator entries from the `indicators` table
-        $sql = 'SELECT `id`, `name`, `type`, `value`, `parent` '.
+        $sql = 'SELECT `id`, `name`, `type`, `value` '.
                'FROM `indicators` '.
                'WHERE `hidden` = 0;';
         
@@ -94,7 +94,7 @@ class DBConnect {
 
     public function iocFetchHidden() {
         // fetch all indicator entries from the `indicators` table
-        $sql = 'SELECT `id`, `name`, `type`, `value`, `parent` '.
+        $sql = 'SELECT `id`, `name`, `type`, `value` '.
                'FROM `indicators` '.
                'WHERE `hidden` = 1;';
         
@@ -122,7 +122,7 @@ class DBConnect {
     
     public function iocFetchId($id) {
         // fetch one indicator from the `indicators` table
-        $sql = 'SELECT `id`, `name`, `type`, `value`, `parent` '.
+        $sql = 'SELECT `id`, `name`, `type`, `value` '.
                'FROM `indicators` '.
                'WHERE `id` = ?;';
         
@@ -144,20 +144,20 @@ class DBConnect {
         return $result->fetch_assoc();
     }
     
-    public function iocAdd($name, $type, $value, $parent_id) {
+    public function iocAdd($name, $type, $value) {
         // add new indicator to the `indicators` table
         // table structure: id name type value value2
         // returns the newly generated id
         if ($value == '') $value = NULL;
         
         $sql = 'INSERT INTO `indicators` '.
-               '(`name`, `type`, `value`, `parent`) '.
-               'VALUES (?, ?, ?, ?);';
+               '(`name`, `type`, `value`) '.
+               'VALUES (?, ?, ?);';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
-        if (!$stmt->bind_param('sssi', $name, $type, $value, $parent_id)) 
+        if (!$stmt->bind_param('sss', $name, $type, $value)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())
@@ -169,44 +169,19 @@ class DBConnect {
         return $this->lastInsertId();
     }
     
-    public function iocUpdate($id, $name, $type, $value, $parent_id) {
+    public function iocUpdate($id, $name, $type, $value) {
         // edit an existing indicator in the `indicators` table
         // table structure: id name type value value2
         if ($value == '') $value = NULL;
         
         $sql = 'UPDATE `indicators` '.
-               'SET `name` = ?, `type` = ?, `value` = ?, `parent` = ? '.
+               'SET `name` = ?, `type` = ?, `value` = ? '.
                'WHERE `id` = ?;';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
-        if (!$stmt->bind_param('sssii', $name, $type, $value, $parent_id, $id)) 
-            throw new Exception('Error binding parameters [' . $stmt->error . ']');
-        
-        if (!$stmt->execute())
-            throw new Exception('Error executing statement [' . $stmt->error . ']');
-        
-        $res = $stmt->affected_rows;
-
-        if (!$stmt->close())
-            throw new Exception('Error closing statement [' . $stmt->error . ']');
-
-        return $res;
-    }
-    
-    public function iocUpdateParent($id, $parent_id) {
-        // edit an existing indicator in the `indicators` table
-        // table structure: id name type value value2
-        
-        $sql = 'UPDATE `indicators` '.
-               'SET `parent` = ? '.
-               'WHERE `id` = ?;';
-        
-        if (!$stmt = $this->mysqli->prepare($sql))
-            throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
-        
-        if (!$stmt->bind_param('ii', $parent_id, $id)) 
+        if (!$stmt->bind_param('sssi', $name, $type, $value, $id)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())
@@ -244,7 +219,7 @@ class DBConnect {
         return $res;
     }
     
-    public function iocFetchUnused() {
+    public function iocFetchUnused() { // TODO: remake
     	$sql = 'SELECT `indicators`.* '.
     		   'FROM `indicators` LEFT OUTER JOIN `sets` ON `indicators`.`id` = `sets`.`ioc_id` '.
     		   'WHERE `indicators`.`parent` = 0 AND (`sets`.`hidden` IS NULL OR `sets`.`hidden` = 1);';
@@ -319,7 +294,7 @@ class DBConnect {
 
     public function setFetchName($name) {
         // fetch an indicator set from the `sets` table
-        $sql = 'SELECT `ioc_id` '.
+        $sql = 'SELECT `ioc_id`, `parent_id` '.
                'FROM `sets` '.
                'WHERE `name` = ? AND `hidden` = 0;';
         
@@ -341,15 +316,15 @@ class DBConnect {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function setAdd($name, $ioc_id) {
+    public function setAdd($name, $ioc_id, $parent_id) {
         $sql = 'INSERT INTO `sets` '.
-               '(`name`, `ioc_id`) '.
-               'VALUES (?, ?);';
+               '(`name`, `ioc_id`, `parent_id`) '.
+               'VALUES (?, ?, ?);';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
-        if (!$stmt->bind_param('si', $name, $ioc_id)) 
+        if (!$stmt->bind_param('sis', $name, $ioc_id, $parent_id)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())
@@ -359,6 +334,28 @@ class DBConnect {
             throw new Exception('Error closing statement [' . $stmt->error . ']');
         
         return $this->lastInsertId();
+    }
+    
+    public function setUpdate($name, $ioc_id, $parent_id, $hidden) {
+    	$sql = 'UPDATE `sets` '.
+    			'SET `parent_id` = ?, `hidden` = ? '.
+    			'WHERE `name` = ? AND `ioc_id` = ?;';
+    	
+    	if (!$stmt = $this->mysqli->prepare($sql))
+    		throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
+    	
+    	if (!$stmt->bind_param('issi', $parent_id, $hidden, $name, $ioc_id))
+    		throw new Exception('Error binding parameters [' . $stmt->error . ']');
+    	
+    	if (!$stmt->execute())
+			throw new Exception('Error executing statement [' . $stmt->error . ']');
+    	
+		$res = $stmt->affected_rows;
+    	
+		if (!$stmt->close())
+			throw new Exception('Error closing statement [' . $stmt->error . ']');
+  	
+    	return $res;
     }
     
     public function setHide($name, $ioc_id, $hidden) {

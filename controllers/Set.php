@@ -18,12 +18,12 @@ class Set extends Web {
     }
  
     public function addAction() {
-        $this->checkParams('name', 'ioc');
+        $this->checkParams('name', 'ioc', 'parent');
         $exists = $this->db->setExists($this->params['name'], $this->params['ioc'])['ioc_id'];
         if ($exists == null) {
-            return ['id' => $this->db->setAdd($this->params['name'], $this->params['ioc'])];
+            return ['id' => $this->db->setAdd($this->params['name'], $this->params['ioc'], $this->params['parent'])];
         } else {
-            $this->db->setHide($this->params['name'], $this->params['ioc'], 0);
+            $this->db->setUpdate($this->params['name'], $this->params['ioc'], $this->params['parent'], 0);
             return ['id' => $exists];
         }
     }

@@ -1,7 +1,8 @@
 app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModal', function($scope, IocService, SetService, $uibModal) {
-    
+
+	// TODO: fix
+	
     $scope.iocList = [];
-    $scope.iocUnusedList = [];
     $scope.iocListRaw = [];
     $scope.iocTypes = [];
     $scope.setNameList = [];
@@ -35,7 +36,7 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
             resolve: {
                 data: function() {
                     return {
-                        list: $scope.iocUnusedList
+                        list: $scope.iocList
                     };
                 }
             }
@@ -46,10 +47,10 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
         var modalInstance = setAddModalInstance();
         
         modalInstance.result.then(function success(childId) {
-            SetService.addIoc($scope.newSetName, childId).then(function success(data) {
+            SetService.addIoc($scope.newSetName, childId, 0).then(function success(data) {
                 $scope.addAlert('success', 'Child added');
-                $scope.loadUnused();
                 $scope.loadSetNames();
+                $scope.loadIoc();
                 $scope.selectedSet = $scope.newSetName;
             }, function error(msg) {
                 $scope.addAlert('danger', 'Error: ' + msg);
@@ -62,10 +63,9 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
         var modalInstance = setAddModalInstance();
         
         modalInstance.result.then(function success(childId) {
-            IocService.updateParent(childId, node.id).then(function success(data) {
+            SetService.addIoc($scope.selectedSet, childId, node.id).then(function success(data) {
                 $scope.addAlert('success', 'Child added');
                 $scope.loadIoc();
-                $scope.loadUnused();
                 $scope.loadTree($scope.selectedSet);
             }, function error(msg) {
                 $scope.addAlert('danger', 'Error: ' + msg);
@@ -78,9 +78,9 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
         var modalInstance = setAddModalInstance();
         
         modalInstance.result.then(function success(childId) {
-            SetService.addIoc($scope.selectedSet, childId).then(function success(data) {
+            SetService.addIoc($scope.selectedSet, childId, 0).then(function success(data) {
                 $scope.addAlert('success', 'Child added');
-                $scope.loadUnused();
+                $scope.loadIoc();
                 $scope.loadTree($scope.selectedSet);
             }, function error(msg) {
                 $scope.addAlert('danger', 'Error: ' + msg);
@@ -106,16 +106,10 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
     
     $scope.remove = function(node) {
         node.open = false;
-        IocService.updateParent(node.id, 0).then(function success(data) {
-            SetService.hideIoc($scope.selectedSet, node.id).then(function success(data) {
-                $scope.addAlert('success', 'Child removed');
-                $scope.loadIoc();
-                $scope.loadUnused();
-                $scope.loadSetNames();
-                $scope.loadTree($scope.selectedSet);
-            }, function error(msg) {
-                $scope.addAlert('danger', 'Error: ' + msg);
-            });
+        SetService.hideIoc($scope.selectedSet, node.id).then(function success(data) {
+            $scope.addAlert('success', 'Child removed');
+            $scope.loadSetNames();
+            $scope.loadTree($scope.selectedSet);
         }, function error(msg) {
             $scope.addAlert('danger', 'Error: ' + msg);
         });
@@ -126,16 +120,6 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
         IocService.listAvailable().then(function success(data) {
             $scope.iocListRaw = data;
             $scope.iocList = Object.keys(data).map(function(k) {
-                var d = data[k];
-                if (d.value === null) d.value = '';
-                return d;
-            });
-        });
-    };
-    
-    $scope.loadUnused = function() {
-        IocService.listUnused().then(function success(data) {
-            $scope.iocUnusedList = Object.keys(data).map(function(k) {
                 var d = data[k];
                 if (d.value === null) d.value = '';
                 return d;
@@ -174,7 +158,6 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
     
     // init
     $scope.loadIoc();
-    $scope.loadUnused();
     $scope.loadSetNames();
     $scope.loadTypes();
 }]);

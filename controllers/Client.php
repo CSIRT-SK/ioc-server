@@ -19,20 +19,24 @@ class Client extends AbstractController {
         	array_pop($e['value']);
         	return $e;
         }, $result);
+        $setEntries = $this->db->setFetchName($this->params['name']);
+		if (empty($setEntries)) throw new Exception('Set not found');
+        foreach ($setEntries as $row) {
+        	$iocList[$row['ioc_id']]['parent'] = $row['parent_id'];
+        }
         
+        $setTree = [];
         foreach ($iocList as $key => &$entry) {
-            if ($entry['parent'] != 0)
-                $iocList[$entry['parent']]['children'][] = &$entry;
+            if (isset ($entry['parent'])) {
+            	if ($entry['parent'] == 0)
+            		$setTree[] = &$entry;
+            	else
+            		$iocList[$entry['parent']]['children'][] = &$entry;
+            }
             unset($entry['parent']);
         }
-        
-        $results = $this->db->setFetchName($this->params['name']);
-		if (empty($results)) throw new Exception('Set not found');
-        foreach ($results as $row) {
-            $root[] = $iocList[$row['ioc_id']];
-        }
-        
-        return $root;
+              
+        return $setTree;
     }
     
     public function uploadAction() {

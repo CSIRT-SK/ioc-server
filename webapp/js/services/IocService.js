@@ -25,14 +25,6 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
         return ApiCall(data);
     };
     
-    service.listUnused = function() {
-        var data = {
-            controller: 'ioc',
-            action: 'listUnused'
-        };
-        return ApiCall(data);
-    };
-    
     service.get = function(id) {
         var data = {
             controller: 'ioc',
@@ -49,7 +41,6 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             name: ioc.name,
             type: ioc.type,
             value: ioc.value,
-            parent: ioc.parent
         };
         return ApiCall(data);
     };
@@ -62,17 +53,6 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             name: ioc.name,
             type: ioc.type,
             value: ioc.value,
-            parent: ioc.parent
-        };
-        return ApiCall(data);
-    };
-    
-    service.updateParent = function(id, parent) {
-        var data = {
-            controller: 'ioc',
-            action: 'changeParent',
-            id: id,
-            parent: parent
         };
         return ApiCall(data);
     };
