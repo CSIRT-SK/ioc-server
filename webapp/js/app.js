@@ -37,7 +37,7 @@ app.config(function($routeProvider, pages) {
     });
   }
   $routeProvider.otherwise({
-    redirectTo: '/'
+    redirectTo: '/ioc'
   });
 });
 

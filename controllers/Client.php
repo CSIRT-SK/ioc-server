@@ -27,7 +27,7 @@ class Client extends AbstractController {
         }
         
         $results = $this->db->setFetchName($this->params['name']);
-        //echo var_export($iocList);
+		if (empty($results)) throw new Exception('Set not found');
         foreach ($results as $row) {
             $root[] = $iocList[$row['ioc_id']];
         }
@@ -42,7 +42,7 @@ class Client extends AbstractController {
         $report = json_decode($this->params['report'], true);
         
         if ($report == null)
-            throw new Exception('Not a valid JSON');
+            throw new Exception('Not a valid JSON: ' . $this->params['report']);
         
         /* Report format
             {
