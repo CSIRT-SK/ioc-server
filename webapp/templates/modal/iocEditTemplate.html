@@ -24,8 +24,7 @@
         <div class="form-group has-feedback" ng-repeat="input in values[ioc.type]" ng-class="{'has-error': !editForm.value{{$index}}.$valid}">
             <label class="control-label col-sm-3" for="value{{$index}}">{{input.name}}:</label>
             <div class="col-sm-9">
-                <input type="text" class="form-control" id="value{{$index}}" name="value{{$index}}" ng-model="input.value" required>
-                <span ng-show="!editForm.value{{$index}}.$valid" class="glyphicon glyphicon-remove form-control-feedback"></span>
+                <input type="text" class="form-control" id="value{{$index}}" name="value{{$index}}" ng-model="input.value">
             </div>
         </div>
     </form>

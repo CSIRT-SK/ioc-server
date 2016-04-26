@@ -108,10 +108,12 @@ app.controller('IocController', ['$scope', 'IocService', '$uibModal', function($
             controller: 'IocEditModalCtrl',
             resolve: {
                 data: function() {
+                	var val = '';
+                	for (var i = 0; i < $scope.iocTypes[0].values_count; i++) val += '|';
                     return {
                         ioc: {
-                            type: 'file-name',
-                            value: '|',
+                            type: $scope.iocTypes[0].type,
+                            value: val,
                             parent: 0
                         },
                         types: $scope.iocTypes,

@@ -1,5 +1,7 @@
 var app = angular.module('iocApp', ['ngRoute', 'ngAnimate', 'ui.bootstrap']);
 
+app.constant('apiUrl', 'https://localhost/ioc-server/api.php');
+
 app.constant('pages', [
     {
         name: 'IOC',

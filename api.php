@@ -3,7 +3,7 @@ define('DEBUG', true);
 /*
 Extensible endpoint for remote API interaction
 */
-if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
+if (!defined('ROOT')) define('ROOT', '.');
 include_once ROOT.'/models/DBConnect.php';
 
 if (!DEBUG) {

@@ -1,6 +1,7 @@
-app.factory('ApiCall', ['$http', '$q', function($http, $q){
+app.factory('ApiCall', ['$http', '$q', '$location', function($http, $q, $location){
     return function(data) {
-        return $http.post('https://localhost/ioc-server/api.php', data).then(function success(response) {
+    	var apiUrl = $location.absUrl().split('#')[0] + '../api.php';
+        return $http.post(apiUrl, data).then(function success(response) {
             return $q(function(resolve, reject){
                 if (response.data.success) {
                     resolve(response.data.data);

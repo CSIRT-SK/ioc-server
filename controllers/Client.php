@@ -2,7 +2,7 @@
 /*
 Publicly exposed API functions
 */
-if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
+if (!defined('ROOT')) define('ROOT', '..');
 include_once ROOT.'/models/DBConnect.php';
 include_once ROOT.'/controllers/AbstractController.php';
 

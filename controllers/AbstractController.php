@@ -2,7 +2,7 @@
 /*
 Privately accessible API base
 */
-if (!defined('ROOT')) define('ROOT', $_SERVER['DOCUMENT_ROOT'].'/ioc-server');
+if (!defined('ROOT')) define('ROOT', '..');
 include_once ROOT.'/models/DBConnect.php';
 
 abstract class AbstractController {
