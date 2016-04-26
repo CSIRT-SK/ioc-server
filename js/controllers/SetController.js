@@ -103,6 +103,34 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
         });
     };
     
+    $scope.edit = function(node) {
+    	node.open = false;
+        var modalInstance = $uibModal.open({
+            templateUrl: 'templates/modal/iocEditTemplate.html',
+            controller: 'IocEditModalCtrl',
+            resolve: {
+                data: function() {
+                    return {
+                        ioc: $scope.iocListRaw[node.id],
+                        types: $scope.iocTypes,
+                        action: 'Edit'
+                    };
+                }
+            }
+        });
+        
+        modalInstance.result.then(function success(ioc) {
+            IocService.update(node.id, ioc).then(function success(data) {
+                $scope.loadAvailable();
+                $scope.addAlert('success', 'IOC data updated');
+            }, function error(msg) {
+                $scope.loadAvailable();
+                console.log('[Edit IOC] Error: ' + msg);
+                $scope.addAlert('danger', 'Error: ' + msg);
+            });
+        });
+    }
+    
     $scope.remove = function(node) {
         node.open = false;
         SetService.hideIoc(node.set_id).then(function success(data) {

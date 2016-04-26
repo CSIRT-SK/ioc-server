@@ -132,10 +132,8 @@ ul.tree > li.tree-node:last-child > div.tree-node::before {
     border: 0;
 }
 
-.hidden-input
-
 .popover {
-    max-width: 600px;
+    max-width: 400px;
 }
 
 .popover-content {

@@ -1,5 +1,5 @@
 <?php
-if (!defined('ROOT')) define('ROOT', '..');
+if (!defined('ROOT')) define('ROOT', './api');
 include_once ROOT.'/controllers/Ioc.php';
 include_once ROOT.'/controllers/Set.php';
 include_once ROOT.'/controllers/Report.php';
