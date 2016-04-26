@@ -1,0 +1,6 @@
+<div class="btn-group">
+    <button ng-if="showAdd(tree.type)" type="button" class="btn btn-success" ng-click="addChild(tree)"><span class="glyphicon glyphicon-plus"></span> Add child</button>
+    <button ng-if="!showAdd(tree.type) && !showAddRoot(tree.type)" type="button" class="btn btn-default" ng-click="detail(tree)"><span class="glyphicon glyphicon-menu-hamburger"></span> Details</button>
+    <button ng-if="!showAddRoot(tree.type)" type="button" class="btn btn-danger" ng-click="remove(tree)"><span class="glyphicon glyphicon-remove"></span> Remove node</button>
+    <button ng-if="showAddRoot(tree.type)" type="button" class="btn btn-success" ng-click="addRoot(tree)"><span class="glyphicon glyphicon-plus"></span> Add child</button>
+</div>

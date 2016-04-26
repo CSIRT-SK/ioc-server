@@ -1,0 +1,45 @@
+<div class="modal-header">
+    <span class="h3 modal-title">Select child IOC</span>
+    <div class="pull-right">
+    	<button class="btn btn-warning" type="button" ng-click="ok('and', null)">AND</button>
+    	<button class="btn btn-warning" type="button" ng-click="ok('or', null)">OR</button>
+		<button class="btn btn-success" type="button" ng-click="addNew()"><span class="glyphicon glyphicon-plus"></span> New IOC</button>
+	    <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="input-group">
+                <span class="input-group-addon"><span class=" glyphicon glyphicon-search"></span></span>
+                <input type="text" class="form-control" ng-model="iocTable.search" placeholder="Name, type, value"></input>
+            </div>
+        </div>
+    </div>
+    <table class="table table-hover table-condensed">
+        <thead>
+            <tr>
+                <th ng-repeat="col in ['name', 'type', 'value']">
+                    <a href="#/set" ng-click="orderBy(col)">
+                        <span class="text-capitalize">{{col}}</span>
+                        <span ng-show="iocTable.sort.col == col && iocTable.sort.reverse" class="glyphicon glyphicon-triangle-top small"></span>
+                        <span ng-show="iocTable.sort.col == col && !iocTable.sort.reverse" class="glyphicon glyphicon-triangle-bottom small"></span>
+                    </a>
+                </th>
+                <th width="15%"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="ioc in iocList | orderBy:iocTable.sort.col:iocTable.sort.reverse | filter:iocTable.search">
+                <td>{{ioc.name}}</td>
+                <td><code class="text-uppercase">{{ioc.type}}</code></td>
+                <td><span ng-class="{'text-muted': ioc.value == ''}"><samp>{{ioc.value | blank}}</samp></span></td>
+                <td>
+                    <span class="pull-right">
+                        <button class="btn btn-success btn-xs" ng-click="ok('ioc', ioc.id)"><span class="glyphicon glyphicon-plus"></span></button>
+                    </span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

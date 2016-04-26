@@ -1,0 +1,38 @@
+<div class="container-fluid">
+    <div class="alert-box">
+        <uib-alert class="pull-right alert-hor" ng-repeat="alert in alerts" type="{{alert.type}}" close="closeAlert($index)" dismiss-on-timeout=5000>{{alert.msg}}</uib-alert>
+    </div>
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="panel panel-default panel-body">
+                <div class="row">
+                    <div class="col-sm-5">
+                            <div class="input-group">
+                                <span class="input-group-addon" for="setName">Set:</span>
+                                <select class="form-control" ng-model="selectedSet" ng-options="setName for setName in setNameList track by setName"></select>
+                            </div>
+                    </div>
+                    <div class="col-sm-5 col-sm-offset-2">
+                        <div class="input-group" ng-form="newForm">
+                            <input type="text" class="form-control" placeholder="New set name" name="name" ng-model="newSetName" required></input>
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-success pull-right" ng-disabled="newForm.name.$error.required" ng-click="newSet()"><span class="glyphicon glyphicon-plus"></span> New set</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="row top-buffer">
+                    <div class="col-sm-12">
+                        <div class="well">
+                            <span class="pull-right text-muted info-tooltip" uib-tooltip="Click nodes to edit the IOC tree"><span class="glyphicon glyphicon-question-sign"></span></span>
+                            <ul class="tree col-sm-10" style="font-size: 120%;">
+                                <span class="label label-primary label-button" uib-popover-template="'templates/treePopover.html'" popover-trigger="outsideClick" popover-placement="right" popover-is-open="tree.open">{{tree.name}}</span>
+                                <li class="tree-node" ng-repeat="tree in tree.children track by $index" ng-include="'templates/treeTemplate.html'"></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
