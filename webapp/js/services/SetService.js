@@ -18,24 +18,24 @@ app.factory('SetService', ['ApiCall', function(ApiCall) {
         return ApiCall(data);
     };
 
-    service.addIoc = function(name, iocId, parentId) {
+    service.addIoc = function(name, type, parent, iocId) {
         var data = {
             controller: 'set',
             action: 'add',
             name: name,
-            ioc: iocId,
-            parent: parentId
+            type: type,
+            parent: parent,
+            ioc: iocId
         };
         return ApiCall(data);
     };
     
-    service.hideIoc = function(name, iocId, parentId) {
+    service.hideIoc = function(id) {
         var hidden = 1;
         var data = {
             controller: 'set',
             action: 'hide',
-            name: name,
-            ioc: iocId,
+            id: id,
             hidden: hidden
         };
         return ApiCall(data);

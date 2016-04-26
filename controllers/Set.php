@@ -18,19 +18,20 @@ class Set extends Web {
     }
  
     public function addAction() {
-        $this->checkParams('name', 'ioc', 'parent');
-        $exists = $this->db->setExists($this->params['name'], $this->params['ioc'])['ioc_id'];
-        if ($exists == null) {
-            return ['id' => $this->db->setAdd($this->params['name'], $this->params['ioc'], $this->params['parent'])];
+        $this->checkParams('name', 'type', 'parent');
+        if ($this->params['type'] == 'ioc') {
+        	$this->checkParams('ioc');
+        	return ['id' => $this->db->setAdd($this->params['name'], $this->params['parent'], $this->params['type'], $this->params['ioc'])];
+        } else if ($this->params['type'] == 'and' || $this->params['type'] == 'or') {
+        	return ['id' => $this->db->setAdd($this->params['name'], $this->params['parent'], $this->params['type'], null)];
         } else {
-            $this->db->setUpdate($this->params['name'], $this->params['ioc'], $this->params['parent'], 0);
-            return ['id' => $exists];
+        	throw new Exception('Unsupported type "' . $this->params['type'] . '"');
         }
     }
     
     public function hideAction() {
-        $this->checkParams('name', 'ioc', 'hidden');
-        return ['changed' => $this->db->setHide($this->params['name'], $this->params['ioc'], $this->params['hidden'])];
+        $this->checkParams('id', 'hidden');
+        return ['changed' => $this->db->setHide($this->params['id'], $this->params['hidden'])];
     }
 }
 ?>

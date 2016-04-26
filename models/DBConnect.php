@@ -268,33 +268,9 @@ class DBConnect {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public function setExists($name, $ioc_id) {
-        // fetch an indicator set from the `sets` table
-        $sql = 'SELECT `name`, `ioc_id` '.
-               'FROM `sets` '.
-               'WHERE `name` = ? AND `ioc_id` = ?;';
-        
-        if (!$stmt = $this->mysqli->prepare($sql))
-            throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
-        
-        if (!$stmt->bind_param('si', $name, $ioc_id)) 
-            throw new Exception('Error binding parameters [' . $stmt->error . ']');
-        
-        if (!$stmt->execute())
-            throw new Exception('Error executing statement [' . $stmt->error . ']');
-        
-        if (!$result = $stmt->get_result())
-            throw new Exception('Error getting result [' . $stmt->error . ']');
-
-        if (!$stmt->close())
-            throw new Exception('Error closing statement [' . $stmt->error . ']');
-
-        return $result->fetch_assoc();
-    }
-
     public function setFetchName($name) {
         // fetch an indicator set from the `sets` table
-        $sql = 'SELECT `ioc_id`, `parent_id` '.
+        $sql = 'SELECT `id`, `parent_id`, `type`, `ioc_id` '.
                'FROM `sets` '.
                'WHERE `name` = ? AND `hidden` = 0;';
         
@@ -313,18 +289,22 @@ class DBConnect {
         if (!$stmt->close())
             throw new Exception('Error closing statement [' . $stmt->error . ']');
 
-        return $result->fetch_all(MYSQLI_ASSOC);
+        $ret = [];
+        foreach ($result->fetch_all(MYSQLI_ASSOC) as $row) {
+        	$ret[$row['id']] = $row;
+        }
+        return $ret;
     }
 
-    public function setAdd($name, $ioc_id, $parent_id) {
+    public function setAdd($name, $parent_id, $type, $ioc_id) {
         $sql = 'INSERT INTO `sets` '.
-               '(`name`, `ioc_id`, `parent_id`) '.
-               'VALUES (?, ?, ?);';
+               '(`name`, `parent_id`, `type`, `ioc_id`) '.
+               'VALUES (?, ?, ?, ?);';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
-        if (!$stmt->bind_param('sis', $name, $ioc_id, $parent_id)) 
+        if (!$stmt->bind_param('sisi', $name, $parent_id, $type, $ioc_id)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())
@@ -336,37 +316,15 @@ class DBConnect {
         return $this->lastInsertId();
     }
     
-    public function setUpdate($name, $ioc_id, $parent_id, $hidden) {
-    	$sql = 'UPDATE `sets` '.
-    			'SET `parent_id` = ?, `hidden` = ? '.
-    			'WHERE `name` = ? AND `ioc_id` = ?;';
-    	
-    	if (!$stmt = $this->mysqli->prepare($sql))
-    		throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
-    	
-    	if (!$stmt->bind_param('issi', $parent_id, $hidden, $name, $ioc_id))
-    		throw new Exception('Error binding parameters [' . $stmt->error . ']');
-    	
-    	if (!$stmt->execute())
-			throw new Exception('Error executing statement [' . $stmt->error . ']');
-    	
-		$res = $stmt->affected_rows;
-    	
-		if (!$stmt->close())
-			throw new Exception('Error closing statement [' . $stmt->error . ']');
-  	
-    	return $res;
-    }
-    
-    public function setHide($name, $ioc_id, $hidden) {
+    public function setHide($id, $hidden) {
         $sql = 'UPDATE `sets` '.
                'SET `hidden` = ? '.
-               'WHERE `name` = ? AND `ioc_id` = ?;';
+               'WHERE `id` = ?;';
 
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
-        if (!$stmt->bind_param('isi', $hidden, $name, $ioc_id)) 
+        if (!$stmt->bind_param('ii', $hidden, $id)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())

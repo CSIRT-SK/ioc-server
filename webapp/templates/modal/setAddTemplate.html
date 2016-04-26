@@ -1,6 +1,8 @@
 <div class="modal-header">
     <span class="h3 modal-title">Select child IOC</span>
     <div class="pull-right">
+    	<button class="btn btn-warning" type="button" ng-click="ok('and', null)">AND</button>
+    	<button class="btn btn-warning" type="button" ng-click="ok('or', null)">OR</button>
 		<button class="btn btn-success" type="button" ng-click="addNew()"><span class="glyphicon glyphicon-plus"></span> New IOC</button>
 	    <button class="btn btn-default" type="button" ng-click="cancel()">Cancel</button>
     </div>
@@ -34,7 +36,7 @@
                 <td><span ng-class="{'text-muted': ioc.value == ''}"><samp>{{ioc.value | blank}}</samp></span></td>
                 <td>
                     <span class="pull-right">
-                        <button class="btn btn-success btn-xs" ng-click="ok(ioc.id)"><span class="glyphicon glyphicon-plus"></span></button>
+                        <button class="btn btn-success btn-xs" ng-click="ok('ioc', ioc.id)"><span class="glyphicon glyphicon-plus"></span></button>
                     </span>
                 </td>
             </tr>

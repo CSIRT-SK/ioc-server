@@ -19,22 +19,29 @@ class Client extends AbstractController {
         	array_pop($e['value']);
         	return $e;
         }, $result);
+
         $setEntries = $this->db->setFetchName($this->params['name']);
 		if (empty($setEntries)) throw new Exception('Set not found');
-        foreach ($setEntries as $row) {
-        	$iocList[$row['ioc_id']]['parent'] = $row['parent_id'];
-        }
         
-        $setTree = [];
-        foreach ($iocList as $key => &$entry) {
-            if (isset ($entry['parent'])) {
-            	if ($entry['parent'] == 0)
-            		$setTree[] = &$entry;
-            	else
-            		$iocList[$entry['parent']]['children'][] = &$entry;
-            }
-            unset($entry['parent']);
-        }
+		$setTree = [];
+		foreach ($setEntries as &$entry) {
+			$setId = $entry['id'];
+			if ($entry['parent_id'] == 0) {
+				$setTree[] = &$entry;
+ 				unset($entry['id'], $entry['parent_id']);
+			} else {
+				$setEntries[$entry['parent_id']]['children'][] = &$entry;
+			}
+			
+			if ($entry['type'] == 'ioc') {
+				$entry = $iocList[$entry['ioc_id']];
+			} else {
+				unset($entry['ioc_id']);
+			}
+				
+			$entry['set_id'] = $setId;
+		}
+		
               
         return $setTree;
     }

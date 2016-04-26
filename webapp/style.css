@@ -108,6 +108,14 @@ ul.tree > li.tree-node:last-child > div.tree-node::before {
     margin-right: 0.2em;
 }
 
+.label-code.label-code-only {
+	padding-right: 0.2em;
+}
+
+.label-code.label-code-only code {
+	margin-right: 0;
+}
+
 .label.label-default.label-button:hover {
     box-shadow: 0 0 1px 1px #777777;
 }

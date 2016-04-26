@@ -46,8 +46,8 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
     $scope.newSet = function() {
         var modalInstance = setAddModalInstance();
         
-        modalInstance.result.then(function success(childId) {
-            SetService.addIoc($scope.newSetName, childId, 0).then(function success(data) {
+        modalInstance.result.then(function success(data) {
+            SetService.addIoc($scope.newSetName, data.type, 0, data.id).then(function success(data) {
                 $scope.addAlert('success', 'Child added');
                 $scope.loadSetNames();
                 $scope.loadIoc();
@@ -61,9 +61,8 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
     $scope.addChild = function(node) {
         node.open = false;
         var modalInstance = setAddModalInstance();
-        
-        modalInstance.result.then(function success(childId) {
-            SetService.addIoc($scope.selectedSet, childId, node.id).then(function success(data) {
+        modalInstance.result.then(function success(data) {
+            SetService.addIoc($scope.selectedSet, data.type, node.set_id, data.id).then(function success(data) {
                 $scope.addAlert('success', 'Child added');
                 $scope.loadIoc();
                 $scope.loadTree($scope.selectedSet);
@@ -77,8 +76,8 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
         node.open = false;
         var modalInstance = setAddModalInstance();
         
-        modalInstance.result.then(function success(childId) {
-            SetService.addIoc($scope.selectedSet, childId, 0).then(function success(data) {
+        modalInstance.result.then(function success(data) {
+            SetService.addIoc($scope.selectedSet, data.type, 0, data.id).then(function success(data) {
                 $scope.addAlert('success', 'Child added');
                 $scope.loadIoc();
                 $scope.loadTree($scope.selectedSet);
@@ -106,7 +105,7 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
     
     $scope.remove = function(node) {
         node.open = false;
-        SetService.hideIoc($scope.selectedSet, node.id).then(function success(data) {
+        SetService.hideIoc(node.set_id).then(function success(data) {
             $scope.addAlert('success', 'Child removed');
             $scope.loadSetNames();
             $scope.loadTree($scope.selectedSet);

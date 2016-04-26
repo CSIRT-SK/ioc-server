@@ -18,8 +18,11 @@ app.controller('SetAddModalCtrl', ['$scope', '$uibModal', '$uibModalInstance', '
         }
     };
     
-    $scope.ok = function (id) {
-        $uibModalInstance.close(id);
+    $scope.ok = function (type, id) {
+        $uibModalInstance.close({
+        	type: type,
+        	id: id
+        });
     };
 
     $scope.cancel = function () {
