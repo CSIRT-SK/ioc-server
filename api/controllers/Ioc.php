@@ -26,14 +26,12 @@ class Ioc extends Web {
     }
  
     public function addAction() {
-        $this->checkParams('name', 'type');
-        if (!isset($this->params['value'])) $this->params['value'] = null;
+        $this->checkParams('name', 'type', 'value');
         return ['id' => $this->db->iocAdd($this->params['name'], $this->params['type'], $this->params['value'])];
     }
     
     public function updateAction() {
-        $this->checkParams('id', 'name', 'type');
-        if (!isset($this->params['value'])) $this->params['value'] = null;
+        $this->checkParams('id', 'name', 'type', 'value');
         return ['changed' => $this->db->iocUpdate($this->params['id'], $this->params['name'], $this->params['type'], $this->params['value'])];
     }
     

@@ -38,8 +38,9 @@ class Client extends AbstractController {
 			} else {
 				unset($entry['ioc_id']);
 			}
-				
-			$entry['set_id'] = $setId;
+			
+			if (isset($this->params['setids']))
+				$entry['set_id'] = $setId;
 		}
 		
               

@@ -35,10 +35,12 @@ app.controller('SetAddModalCtrl', ['$scope', '$uibModal', '$uibModalInstance', '
             controller: 'IocEditModalCtrl',
             resolve: {
                 data: function() {
+                	var val = '';
+                	for (var i = 0; i < $scope.iocTypes[0].values_count; i++) val += '|';
                     return {
                         ioc: {
-                            type: 'file-name',
-                            value: '|',
+                            type: $scope.iocTypes[0].type,
+                            value: val,
                             parent: 0
                         },
                         types: $scope.iocTypes,
@@ -50,7 +52,10 @@ app.controller('SetAddModalCtrl', ['$scope', '$uibModal', '$uibModalInstance', '
         
         modalInstance.result.then(function success(ioc) {
             IocService.add(ioc).then(function success(data) {
-            	$uibModalInstance.close(data.id);
+            	$uibModalInstance.close({
+            		type: 'ioc',
+            		id: data.id 
+            	});
             }, function error(msg) {
             	$uibModalInstance.dismiss(msg);
             });

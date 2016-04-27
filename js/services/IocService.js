@@ -71,7 +71,8 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
         var data = {
             controller: 'client',
             action: 'request',
-            name: name
+            name: name,
+            setids: 1
         };
         return ApiCall(data);
     };
