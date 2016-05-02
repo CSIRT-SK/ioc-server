@@ -68,6 +68,7 @@ function exportData($type, $format) {
 					$set[] = cleanTree($root);
 				}
 				$setList[] = ['name' => $name, 'data' => $set];
+				$set = [];
 			}
 			
 			switch ($format) {
@@ -162,15 +163,7 @@ function importData($type, $format, $filename) {
 			$setApi = new Set([]);
 			foreach ($setList as $set) {
 				foreach ($set['data'] as $root) {
-					packValues($root['value']);
-					$id = $iocApi->setParams($root)->addAction()['id'];
-					$setApi->setParams(['name' => $set['name'], 'ioc' => $id])->addAction();
-					if (isset($root['children'])) {
-						foreach ($root['children'] as $child) {
-							$child['parent'] = $id;
-							importTree($child, $iocApi);
-						}
-					}
+					importTree($set['name'], $root, 0);
 				}
 			}
 			break;
@@ -192,6 +185,7 @@ function importData($type, $format, $filename) {
 		default:
 			// TODO: error - invalid type
 	}
+	header('Location: https://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'#/backup');
 // 	echo '</pre>';
 }
 
@@ -204,14 +198,21 @@ function cleanTree(&$node) {
 	return $node;
 }
 
-function importTree($node, $iocApi) {
-	packValues($node['value']);
-	$id = $iocApi->setParams($node)->addAction();
-	if (isset($node['children'])) {
-		foreach ($node['children'] as $child) {
-			$child['parent'] = $id;
-			importTree($child, $iocApi);
+function importTree($name, $node, $parentId) {
+	if ($node['type'] == 'and' || $node['type'] == 'or') {
+		$setApi = new Set(['name' => $name, 'type' => $node['type'], 'parent' => $parentId]);
+		$id = $setApi->addAction()['id'];
+		if (isset($node['children'])) {
+			foreach ($node['children'] as $child) {
+				importTree($name, $child, $id);
+			}
 		}
+	} else {
+		packValues($node['value']);
+		$iocApi = new Ioc(['name' => $node['name'], 'type' => $node['type'], 'value' => $node['value']]);
+		$id = $iocApi->addAction()['id'];
+		$setApi = new Set(['name' => $name, 'type' => 'ioc', 'parent' => $parentId, 'ioc' => $id]);
+		$setApi->addAction();
 	}
 }
 
