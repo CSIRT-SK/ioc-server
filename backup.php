@@ -135,9 +135,10 @@ function importData($type, $format, $filename) {
 			switch ($format) {
 				case 'json':
 					$iocList = json_decode(file_get_contents($filename), true);
+					foreach ($iocList as $ioc) packValues($ioc['value']);
 					break;
 				case 'csv':
-					// TODO: csv parsing
+					$iocList = parseCsv(file($filename));
 					break;
 				default:
 					// TODO: error - unsupported format
@@ -145,7 +146,6 @@ function importData($type, $format, $filename) {
 			
 			$iocApi = new Ioc([]);
 			foreach ($iocList as $ioc) {
-				packValues($ioc['value']);
 				$iocApi->setParams($ioc)->addAction();
 			}
 			break;
@@ -226,4 +226,30 @@ function unpackValues(&$values) {
 	array_pop($values);
 }
 
+function parseCsv($lines) {
+    $csv = array_map('str_getcsv', $lines);
+        
+    // find indices of relevant fields
+    for ($i = 0; $i < count($csv[0]); $i++) {
+        // names of relevant fields for different input formats should be stored in some constant (instead of hardcoded)
+        if ($csv[0][$i] === 'name')
+            $iName = $i;
+    	if ($csv[0][$i] === 'type')
+            $iType = $i;
+        if ($csv[0][$i] === 'value')
+            $iValue = $i;
+    }
+    
+    // extract the relevant fields
+    $list = [];
+    for ($i = 1; $i < count($csv); $i++) {
+        $indicator = [
+            'name' => $csv[$i][$iName],
+        	'type' => $csv[$i][$iType],
+            'value' => $csv[$i][$iValue],
+        ];
+        $list[] = $indicator;
+    }
+    return $list;
+}
 ?>
