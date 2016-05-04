@@ -219,26 +219,6 @@ class DBConnect {
         return $res;
     }
     
-    public function iocFetchUnused() { // TODO: remake
-    	$sql = 'SELECT `indicators`.* '.
-    		   'FROM `indicators` LEFT OUTER JOIN `sets` ON `indicators`.`id` = `sets`.`ioc_id` '.
-    		   'WHERE `indicators`.`parent` = 0 AND (`sets`.`hidden` IS NULL OR `sets`.`hidden` = 1);';
-    	
-	if (!$stmt = $this->mysqli->prepare($sql))
-    	throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
-    	
-    if (!$stmt->execute())
-    	throw new Exception('Error executing statement [' . $stmt->error . ']');
-    
-    if (!$result = $stmt->get_result())
-    	throw new Exception('Error getting result [' . $stmt->error . ']');
-    
-    if (!$stmt->close())
-    	throw new Exception('Error closing statement [' . $stmt->error . ']');
-    
-    return $result->fetch_all(MYSQLI_ASSOC);
-    }
-    
 // ========== IOC SET ==========
 
     public function setListNames() {
@@ -336,6 +316,53 @@ class DBConnect {
             throw new Exception('Error closing statement [' . $stmt->error . ']');
 
         return $res;
+    }
+    
+    public function setGetChildren($parentId) {
+    	$sql = 'SELECT `id` '.
+    		   'FROM `sets` '.
+    		   'WHERE `parent_id` = ?;';
+    	
+    	if (!$stmt = $this->mysqli->prepare($sql))
+    		throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
+    	
+    	if (!$stmt->bind_param('i', $parentId))
+    		throw new Exception('Error binding parameters [' . $stmt->error . ']');
+    	
+    	if (!$stmt->execute())
+    		throw new Exception('Error executing statement [' . $stmt->error . ']');
+    	
+    	if (!$result = $stmt->get_result())
+    		throw new Exception('Error getting result [' . $stmt->error . ']');
+    		
+    	if (!$stmt->close())
+    		throw new Exception('Error closing statement [' . $stmt->error . ']');
+    	
+    	return array_map(function ($e) {
+    		return $e['id'];
+    	}, $result->fetch_all(MYSQLI_ASSOC));
+    }
+    
+    public function setHideChildren($parentId, $hidden) {
+    	$sql = 'UPDATE `sets` '.
+			   'SET `hidden` = ? '.
+    		   'WHERE `parent_id` = ?;';
+    	
+    	if (!$stmt = $this->mysqli->prepare($sql))
+    		throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
+    	
+    	if (!$stmt->bind_param('ii', $hidden, $parentId))
+    		throw new Exception('Error binding parameters [' . $stmt->error . ']');
+    	
+		if (!$stmt->execute())
+			throw new Exception('Error executing statement [' . $stmt->error . ']');
+    	
+		$res = $stmt->affected_rows;
+    	
+		if (!$stmt->close())
+			throw new Exception('Error closing statement [' . $stmt->error . ']');
+    	
+		return $res;
     }
     
 // ========== REPORT ==========

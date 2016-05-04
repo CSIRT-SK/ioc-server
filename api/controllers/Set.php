@@ -31,7 +31,28 @@ class Set extends Web {
     
     public function hideAction() {
         $this->checkParams('id', 'hidden');
-        return ['changed' => $this->db->setHide($this->params['id'], $this->params['hidden'])];
+        if ($this->params['hidden']) {
+        	$changed = $this->hideRec($this->params['id']);
+        } else {
+        	$changed = $this->db->setHide($id, false);
+        }
+        return ['changed' => $changed];
     }
+    
+    public function testAction() {
+    	return $this->db->setGetChildren(2);
+    }
+    
+    private function hideRec($id) {
+    	$chg = 0;
+    	$chg += $this->db->setHide($id, true);
+    	$children = $this->db->setGetChildren($id);
+    	$chg += $this->db->setHideChildren($id, true);
+    	foreach ($children as $child) {
+    		$chg += $this->hideRec($child);
+    	}
+    	return $chg;
+    }
+    
 }
 ?>
