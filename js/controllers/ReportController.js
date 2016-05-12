@@ -88,6 +88,14 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
         });
     }
     
+    $scope.showDetailButton = function(id) {
+    	if ($scope.iocMap.hasOwnProperty(id)) {
+    		return $scope.iocMap[id].type != 'and' && $scope.iocMap[id].type != 'or';
+    	} else {
+    		return false;
+    	}
+    }
+    
     // date picker
     $scope.dateRange = "";
     $scope.date = {
@@ -120,14 +128,26 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
     
     // data loaders
     $scope.loadIoc = function(id, reportId) {
-        if ($scope.iocMap.hasOwnProperty(id))
+    	if ($scope.iocMap.hasOwnProperty(id))
             $scope.reportList[reportId].iocName = $scope.iocMap[id].name;
             
-        IocService.get(id).then(function success(data) {
-            if (data.value === null) data.value = '';
-            $scope.iocMap[id] = data;
-            $scope.reportList[reportId].iocName = data.name;
-        });
+    	SetService.getId(id).then(function success(data) {
+    		if (data.type == 'ioc') {
+    			IocService.get(data.ioc_id).then(function success(data) {
+    				$scope.iocMap[id] = data;
+    				$scope.reportList[reportId].iocName = data.name;
+    			});
+    		} else { // and & or
+    			var name = data.type + ' #' + data.id;
+    			$scope.iocMap[id] = {
+    				id: null,
+    				name: name,
+    				type: data.type,
+    				value: ''
+    			};
+    			$scope.reportList[reportId].iocName = name;
+    		}
+    	});
     };
     
     $scope.loadReports = function() {
@@ -150,7 +170,6 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
     });
     
     // init
-    $scope.loadReports();
     $scope.loadTypes();
 }]);
 

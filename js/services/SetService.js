@@ -18,6 +18,15 @@ app.factory('SetService', ['ApiCall', function(ApiCall) {
         return ApiCall(data);
     };
 
+    service.getId = function(id) {
+        var data = {
+                controller: 'set',
+                action: 'getEntry',
+                id: id
+            };
+            return ApiCall(data);
+    };
+    
     service.addIoc = function(name, type, parent, iocId) {
         var data = {
             controller: 'set',

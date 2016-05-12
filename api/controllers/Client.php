@@ -35,12 +35,15 @@ class Client extends AbstractController {
 			
 			if ($entry['type'] == 'ioc') {
 				$entry = $iocList[$entry['ioc_id']];
+				$entry['ioc_id'] = $entry['id'];
 			} else {
-				unset($entry['ioc_id']);
+				$entry['name'] = '#' . $setId;
+ 				unset($entry['ioc_id']);
 			}
+			$entry['id'] = $setId;
 			
-			if (isset($this->params['setids']))
-				$entry['set_id'] = $setId;
+ 			if (!isset($this->params['iocids']))
+ 				unset($entry['ioc_id']);
 		}
 		
               

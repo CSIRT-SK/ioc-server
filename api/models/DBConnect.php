@@ -276,6 +276,30 @@ class DBConnect {
         return $ret;
     }
 
+    public function setFetchId($id) {
+        // fetch an indicator set from the `sets` table
+        $sql = 'SELECT `id`, `parent_id`, `type`, `ioc_id`, `hidden`'.
+               'FROM `sets` '.
+               'WHERE `id` = ?;';
+        
+        if (!$stmt = $this->mysqli->prepare($sql))
+            throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
+        
+        if (!$stmt->bind_param('i', $id)) 
+            throw new Exception('Error binding parameters [' . $stmt->error . ']');
+        
+        if (!$stmt->execute())
+            throw new Exception('Error executing statement [' . $stmt->error . ']');
+        
+        if (!$result = $stmt->get_result())
+            throw new Exception('Error getting result [' . $stmt->error . ']');
+
+        if (!$stmt->close())
+            throw new Exception('Error closing statement [' . $stmt->error . ']');
+
+        return $result->fetch_assoc();
+    }
+
     public function setAdd($name, $parent_id, $type, $ioc_id) {
         $sql = 'INSERT INTO `sets` '.
                '(`name`, `parent_id`, `type`, `ioc_id`) '.

@@ -55,10 +55,11 @@
                                     {{row.iocName}}
                                 </div>
                                 <div class="col-sm-3" style="padding-left:0">
-                                    <button type="button" class="btn btn-default btn-xs" ng-click="detail(row.ioc_id)"><span class="glyphicon glyphicon-menu-hamburger"></span></button></span>
+                                    <span class="pull-right">
+                                    	<button ng-if="showDetailButton(row.ioc_id)" type="button" class="btn btn-default btn-xs" ng-click="detail(row.ioc_id)"><span class="glyphicon glyphicon-menu-hamburger"></span></button></span>
+                                	</span>
                                 </div>
                             </div>
-                            <span class="pull-right">
                         </td>
                         <td>
                             <span ng-show="row.result" class="text-danger"><span class="glyphicon glyphicon-remove"></span> <samp>FOUND</samp></span>

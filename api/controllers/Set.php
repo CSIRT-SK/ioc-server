@@ -17,6 +17,16 @@ class Set extends Web {
         return $this->db->setFetchName($this->params['name']);
     }
  
+    public function getEntryAction() {
+    	$this->checkParams('id');
+    	return $this->db->setFetchId($this->params['id']);
+    }
+    
+    public function getChildrenAction() {
+    	$this->checkParams('id');
+    	return $this->db->setGetChildren($this->params['id']);
+    }
+    
     public function addAction() {
         $this->checkParams('name', 'type', 'parent');
         if ($this->params['type'] == 'ioc') {
@@ -37,10 +47,6 @@ class Set extends Web {
         	$changed = $this->db->setHide($id, false);
         }
         return ['changed' => $changed];
-    }
-    
-    public function testAction() {
-    	return $this->db->setGetChildren(2);
     }
     
     private function hideRec($id) {
