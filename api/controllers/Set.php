@@ -27,13 +27,31 @@ class Set extends Web {
     	return $this->db->setGetChildren($this->params['id']);
     }
     
+    public function testAction() {
+    	return $this->db->setRowExists('test2', 0, 'ioc', 21);
+    }
+    
     public function addAction() {
         $this->checkParams('name', 'type', 'parent');
         if ($this->params['type'] == 'ioc') {
         	$this->checkParams('ioc');
-        	return ['id' => $this->db->setAdd($this->params['name'], $this->params['parent'], $this->params['type'], $this->params['ioc'])];
+
+        	$exists = $this->db->setHiddenRowExists($this->params['name'], $this->params['parent'], $this->params['type'], $this->params['ioc']);
+        	if ($exists == null) {
+        		return ['id' => $this->db->setAdd($this->params['name'], $this->params['parent'], $this->params['type'], $this->params['ioc'])];
+        	} else {
+        		$this->db->setHide($exists['id'], false);
+        		return $exists;
+        	}
         } else if ($this->params['type'] == 'and' || $this->params['type'] == 'or') {
-        	return ['id' => $this->db->setAdd($this->params['name'], $this->params['parent'], $this->params['type'], null)];
+        	$exists = $this->db->setHiddenRowExists($this->params['name'], $this->params['parent'], $this->params['type'], null);
+        	
+        	if ($exists == null) {
+        		return ['id' => $this->db->setAdd($this->params['name'], $this->params['parent'], $this->params['type'], null)];
+        	} else {
+        		$this->db->setHide($exists['id'], false);
+        		return $exists;
+        	}
         } else {
         	throw new Exception('Unsupported type "' . $this->params['type'] . '"');
         }

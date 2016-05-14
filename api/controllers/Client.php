@@ -15,8 +15,7 @@ class Client extends AbstractController {
         // fetch all IOCs in DB
         $result = $this->db->iocFetchList();
         $iocList = array_map(function ($e) {
-        	$e['value'] = preg_replace('/`(.)/', '$1', preg_split("/(?<!`)\|/", $e['value']));
-        	array_pop($e['value']);
+			$e['value'] = $this->unpackArray($e['value']);
         	return $e;
         }, $result);
 
@@ -62,30 +61,33 @@ class Client extends AbstractController {
         /* Report format
             {
                 "org": x,
-                "device": x,
+                "dev": x,
                 "timestamp": x,
-                "setname": x,
-                "indicators": [
+                "set": x,
+                "results": [
                     {
                         "id": x,
-                        "result": x
+                        "result": x,
+                        "data":["x", "xx"]
                     },
                     {
                         "id": x,
-                        "result": x
+                        "result": x,
+                        "data":["x", "xx"]
                     },
                     ...
                 ]
             }
         */
-        $missing = $this->checkArrayEntries($report, 'org', 'device', 'timestamp', 'setname', 'indicators');
+        $missing = $this->checkArrayEntries($report, 'org', 'dev', 'timestamp', 'set', 'results');
         if ($missing != null)
             throw new Exception('Report missing entries: ' . $missing);
         
-        foreach($report['indicators'] as $indicator) {
-            $missing = $this->checkArrayEntries($indicator, 'id', 'result');
+        foreach($report['results'] as &$indicator) {
+            $missing = $this->checkArrayEntries($indicator, 'id', 'result', 'data');
             if ($missing != null)
                 throw new Exception('Indicator entry missing entries: ' . $missing);
+            $indicator['data'] = $this->packArray($indicator['data']);
         }
 
         $result = $this->db->repAddMulti($report);

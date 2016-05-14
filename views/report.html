@@ -37,7 +37,7 @@
 
                                 <div ng-if="col.title == 'Result'" class="btn-group" data-toggle="buttons-checkbox">
                                     <button type="button" class="btn btn-success col-xs-6" ng-model="table.search.result" uib-btn-radio="'0'" uncheckable><span class="glyphicon glyphicon-ok"></span></button>
-                                    <button type="button" class="btn btn-danger col-xs-6" ng-model="table.search.result" uib-btn-radio="'1'" uncheckable><span class="glyphicon glyphicon-remove"></span></button>
+                                    <button type="button" class="btn btn-danger col-xs-6" ng-model="table.search.result" uib-btn-radio="'1'" uncheckable><span class="glyphicon glyphicon-flag"></span></button>
                                 </div>
                             </div>
                         </th>
@@ -56,13 +56,13 @@
                                 </div>
                                 <div class="col-sm-3" style="padding-left:0">
                                     <span class="pull-right">
-                                    	<button ng-if="showDetailButton(row.ioc_id)" type="button" class="btn btn-default btn-xs" ng-click="detail(row.ioc_id)"><span class="glyphicon glyphicon-menu-hamburger"></span></button></span>
+                                    	<button ng-if="showDetailButton(row)" type="button" class="btn btn-default btn-xs" ng-click="detail(row)"><span class="glyphicon glyphicon-menu-hamburger"></span></button></span>
                                 	</span>
                                 </div>
                             </div>
                         </td>
                         <td>
-                            <span ng-show="row.result" class="text-danger"><span class="glyphicon glyphicon-remove"></span> <samp>FOUND</samp></span>
+                            <span ng-show="row.result" class="text-danger"><span class="glyphicon glyphicon-flag"></span> <samp>FOUND</samp></span>
                             <span ng-hide="row.result" class="text-success"><span class="glyphicon glyphicon-ok"></span> <samp>CLEAR</samp></span>
                         </td>
                     </tr>

@@ -73,22 +73,24 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
     };
     
     // modal dialogs
-    $scope.detail = function(id) {
+    $scope.detail = function(result) {
         var modalInstance = $uibModal.open({
-            templateUrl: 'templates/modal/iocDetailTemplate.html',
-            controller: 'IocDetailModalCtrl',
+            templateUrl: 'templates/modal/resultDetailTemplate.html',
+            controller: 'ResultDetailModalCtrl',
             resolve: {
                 data: function() {
                     return {
-                        ioc: $scope.iocMap[id],
-                        types: $scope.iocTypes
+                        ioc: $scope.iocMap[result.ioc_id],
+                        types: $scope.iocTypes,
+                        result: result
                     };
                 }
             }
         });
     }
     
-    $scope.showDetailButton = function(id) {
+    $scope.showDetailButton = function(result) {
+    	var id = result.ioc_id;
     	if ($scope.iocMap.hasOwnProperty(id)) {
     		return $scope.iocMap[id].type != 'and' && $scope.iocMap[id].type != 'or';
     	} else {
@@ -99,7 +101,7 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
     // date picker
     $scope.dateRange = "";
     $scope.date = {
-        start: new Date(0),
+        start: new Date(1451606400 * 1000), // 1.1.2016
         end: new Date()
     };
     
@@ -132,17 +134,28 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
             $scope.reportList[reportId].iocName = $scope.iocMap[id].name;
             
     	SetService.getId(id).then(function success(data) {
-    		if (data.type == 'ioc') {
-    			IocService.get(data.ioc_id).then(function success(data) {
-    				$scope.iocMap[id] = data;
-    				$scope.reportList[reportId].iocName = data.name;
-    			});
-    		} else { // and & or
-    			var name = data.type + ' #' + data.id;
+    		if (data) {
+	    		if (data.type == 'ioc') {
+	    			IocService.get(data.ioc_id).then(function success(data) {
+	    				$scope.iocMap[id] = data;
+	    				$scope.reportList[reportId].iocName = data.name;
+	    			});
+	    		} else { // and & or
+	    			var name = data.type + ' #' + data.id;
+	    			$scope.iocMap[id] = {
+	    				id: null,
+	    				name: name,
+	    				type: data.type,
+	    				value: ''
+	    			};
+	    			$scope.reportList[reportId].iocName = name;
+	    		}
+    		} else {
+    			var name = 'Unknown IOC';
     			$scope.iocMap[id] = {
     				id: null,
     				name: name,
-    				type: data.type,
+    				type: 'unknown',
     				value: ''
     			};
     			$scope.reportList[reportId].iocName = name;

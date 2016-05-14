@@ -128,14 +128,13 @@ function exportData($type, $format) {
 }
 
 function importData($type, $format, $filename) {
-// 	echo '<pre>';
 	switch ($type) {
 		case 'ioc':
 			$iocList = [];
 			switch ($format) {
 				case 'json':
 					$iocList = json_decode(file_get_contents($filename), true);
-					foreach ($iocList as $ioc) packValues($ioc['value']);
+					foreach ($iocList as &$ioc) packValues($ioc['value']);
 					break;
 				case 'csv':
 					$iocList = parseCsv(file($filename));
@@ -144,9 +143,15 @@ function importData($type, $format, $filename) {
 					// TODO: error - unsupported format
 			}
 			
+			if (!is_array($iocList) || isIocData($iocList)) $iocList = [$iocList];
+			
 			$iocApi = new Ioc([]);
 			foreach ($iocList as $ioc) {
-				$iocApi->setParams($ioc)->addAction();
+				if (isIocData($ioc)) {
+					$iocApi->setParams($ioc)->addAction();
+				} else {
+					// TODO: error - bad data
+				}
 			}
 			break;
 		case 'set':
@@ -159,11 +164,17 @@ function importData($type, $format, $filename) {
 					// TODO: error - unsupported format
 			}
 
+			if (!is_array($setList) || isSetData($setList)) $setList = [$setList];
+				
 			$iocApi = new Ioc([]);
 			$setApi = new Set([]);
 			foreach ($setList as $set) {
-				foreach ($set['data'] as $root) {
-					importTree($set['name'], $root, 0);
+				if (isSetData($set)) {
+					foreach ($set['data'] as $root) {
+						importTree($set['name'], $root, 0);
+					}
+				} else {
+					// TODO: error - bad data
 				}
 			}
 			break;
@@ -177,16 +188,21 @@ function importData($type, $format, $filename) {
 					// TODO: error - unsupported format
 			}
 			
+			if (!is_array($repList) || isRepData($repList)) $repList = [$repList];
+			
 			$clientApi = new Client([]);
 			foreach ($repList as $report) {
-				$clientApi->setParams(['report' => json_encode($report)])->uploadAction();
+				if (isRepData($report)) {
+					$clientApi->setParams(['report' => json_encode($report)])->uploadAction();
+				} else {
+					// TODO: error - bad data
+				}
 			}
 			break;
 		default:
 			// TODO: error - invalid type
 	}
 	header('Location: https://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'#/backup');
-// 	echo '</pre>';
 }
 
 // util functions
@@ -252,4 +268,43 @@ function parseCsv($lines) {
     }
     return $list;
 }
+
+function isValueArray($data) {
+	if (!is_array($data)) return false;
+	foreach ($data as $element) {
+		if (gettype($element) != 'string') return false;
+	}
+	return true;
+}
+
+function isIocData($data) {
+	return isset($data['name'],$data['type'],$data['value']) && isValueArray($data['value']);
+}
+
+function isIocTree($data) {
+	if (isIocData($data)) return true;
+	if (!isset($data['name'], $data['type'], $data['children'])) return false;
+	foreach ($data['children'] as $element) {
+		if (!isIocTree($element)) return false;
+	}
+	return true;
+}
+
+function isSetData($data) {
+	if (!isset($data['name'], $data['data']) || !is_array($data['data'])) return false;
+	foreach ($data['data'] as $element) {
+		if (!isIocTree($element)) return false;
+	}
+	return true;
+}
+
+function isRepData($data) {
+	if (!isset($data['org'],$data['device'],$data['timestamp'],$data['setname'],$data['indicators'])) return false;
+	foreach ($data['indicators'] as $element) {
+		if (!isset($element['id'], $element['result'])) return false;
+		if (gettype($element['id']) != 'integer' || gettype($element['result']) != 'integer') return false;
+	}
+	return true;
+}
+
 ?>

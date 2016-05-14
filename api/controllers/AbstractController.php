@@ -41,5 +41,17 @@ abstract class AbstractController {
             return rtrim($missing, ', ');
     }
     
+    protected function packArray($array) {
+    	$string = implode('|', preg_replace('/([`\|])/', '`$1', $array));
+    	if ($string != '') $string .= '|';
+    	return $string;
+    }
+    
+    protected function unpackArray($string) {
+    	$array = preg_replace('/`(.)/', '$1', preg_split("/(?<!`)\|/", $string));
+    	array_pop($array);
+    	return $array;
+    }
+    
 }
 ?>

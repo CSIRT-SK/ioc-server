@@ -278,7 +278,7 @@ class DBConnect {
 
     public function setFetchId($id) {
         // fetch an indicator set from the `sets` table
-        $sql = 'SELECT `id`, `parent_id`, `type`, `ioc_id`, `hidden`'.
+        $sql = 'SELECT `id`, `parent_id`, `type`, `ioc_id`, `hidden` '.
                'FROM `sets` '.
                'WHERE `id` = ?;';
         
@@ -300,6 +300,36 @@ class DBConnect {
         return $result->fetch_assoc();
     }
 
+    public function setHiddenRowExists($setname, $parent_id, $type, $ioc_id) {
+    	$sql = 'SELECT `id` '.
+    			'FROM `sets` '.
+    			'WHERE `name` = ? AND `parent_id` = ? AND `type` = ? AND `hidden` = 1 AND `ioc_id` ';
+    	if (isset($ioc_id)) $sql .= '= ?;';
+    	else $sql .= 'IS NULL;';
+    	
+    	if (!$stmt = $this->mysqli->prepare($sql))
+    		throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
+    	
+		if (isset($ioc_id)) {
+	    	if (!$stmt->bind_param('sisi', $setname, $parent_id, $type, $ioc_id))
+	    		throw new Exception('Error binding parameters [' . $stmt->error . ']');
+		} else {
+			if (!$stmt->bind_param('sis', $setname, $parent_id, $type))
+				throw new Exception('Error binding parameters [' . $stmt->error . ']');
+			}
+		
+    	if (!$stmt->execute())
+    		throw new Exception('Error executing statement [' . $stmt->error . ']');
+    	
+    	if (!$result = $stmt->get_result())
+    		throw new Exception('Error getting result [' . $stmt->error . ']');
+    	
+    	if (!$stmt->close())
+    		throw new Exception('Error closing statement [' . $stmt->error . ']');
+    	
+    	return $result->fetch_assoc();
+    }
+    
     public function setAdd($name, $parent_id, $type, $ioc_id) {
         $sql = 'INSERT INTO `sets` '.
                '(`name`, `parent_id`, `type`, `ioc_id`) '.
@@ -393,7 +423,7 @@ class DBConnect {
 
     public function repFetchList() {
         // fetch all reports from the database
-        $sql = 'SELECT `id`, `org`, `device`, UNIX_TIMESTAMP(`timestamp`) AS `timestamp`, `setname`, `ioc_id`, `result` '.
+        $sql = 'SELECT `id`, `org`, `device`, UNIX_TIMESTAMP(`timestamp`) AS `timestamp`, `setname`, `ioc_id`, `result`, `data` '.
                'FROM `reports`;';
         
         if (!$stmt = $this->mysqli->prepare($sql))
@@ -413,7 +443,7 @@ class DBConnect {
 
     public function repFetchId($id) {
         // fetch one report
-        $sql = 'SELECT `id`, `org`, `device`, UNIX_TIMESTAMP(`timestamp`) AS `timestamp`, `setname`, `ioc_id`, `result` '.
+        $sql = 'SELECT `id`, `org`, `device`, UNIX_TIMESTAMP(`timestamp`) AS `timestamp`, `setname`, `ioc_id`, `result`, `data` '.
                'FROM `reports` '.
                'WHERE `id` = ?;';
         
@@ -432,11 +462,11 @@ class DBConnect {
         if (!$stmt->close())
             throw new Exception('Error closing statement [' . $stmt->error . ']');
 
-        return $result->fetch_all(MYSQLI_ASSOC);
+        return $result->fetch_all(MYSQLI_ASSOC)[0];
     }
     
     public function repFetchTimeRange($from, $to) {
-        $sql = 'SELECT `id`, `org`, `device`, UNIX_TIMESTAMP(`timestamp`) AS `timestamp`, `setname`, `ioc_id`, `result` '.
+        $sql = 'SELECT `id`, `org`, `device`, UNIX_TIMESTAMP(`timestamp`) AS `timestamp`, `setname`, `ioc_id`, `result`, `data` '.
                'FROM `reports` '.
                'WHERE `timestamp` >= FROM_UNIXTIME(?) AND `timestamp` <= FROM_UNIXTIME(?);';
         
@@ -458,15 +488,15 @@ class DBConnect {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
     
-    public function repAdd($org, $device, $timestamp, $setname, $ioc_id, $result) {
+    public function repAdd($org, $device, $timestamp, $setname, $ioc_id, $result, $data) {
         $sql = 'INSERT INTO `reports` '.
-               '(`org`, `device`, `timestamp`, `setname`, `ioc_id`, `result`) '.
-               'VALUES (?, ?, FROM_UNIXTIME(?), ?, ?, ?);';
+               '(`org`, `device`, `timestamp`, `setname`, `ioc_id`, `result`, `data`) '.
+               'VALUES (?, ?, FROM_UNIXTIME(?), ?, ?, ?, ?);';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
         
-        if (!$stmt->bind_param('ssssii', $org, $device, $timestamp, $setname, $ioc_id, $result)) 
+        if (!$stmt->bind_param('ssssiis', $org, $device, $timestamp, $setname, $ioc_id, $result, $data)) 
             throw new Exception('Error binding parameters [' . $stmt->error . ']');
         
         if (!$stmt->execute())
@@ -495,22 +525,23 @@ class DBConnect {
     public function repAddMulti($report) {
         // expects valid report structure as parsed from json
         $sql = 'INSERT INTO `reports` '.
-               '(`org`, `device`, `timestamp`, `setname`, `ioc_id`, `result`) '.
+               '(`org`, `device`, `timestamp`, `setname`, `ioc_id`, `result`, `data`) '.
                'VALUES ';
                
         $params = [];
         $types = '';
-        foreach($report['indicators'] as $indicator) { // create sql query, parameters array and types string
-            $sql .= '(?, ?, FROM_UNIXTIME(?), ?, ?, ?), ';
+        foreach($report['results'] as $indicator) { // create sql query, parameters array and types string
+            $sql .= '(?, ?, FROM_UNIXTIME(?), ?, ?, ?, ?), ';
             
             $params[] = $report['org'];
-            $params[] = $report['device'];
+            $params[] = $report['dev'];
             $params[] = $report['timestamp'];
-            $params[] = $report['setname'];
+            $params[] = $report['set'];
             $params[] = $indicator['id'];
             $params[] = $indicator['result'];
+            $params[] = $indicator['data'];
             
-            $types .= 'ssssii';
+            $types .= 'ssssiis';
         }
         $sql = rtrim($sql, ', ');
         $sql .= ';';

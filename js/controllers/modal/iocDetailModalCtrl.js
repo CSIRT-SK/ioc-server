@@ -2,12 +2,12 @@ app.controller('IocDetailModalCtrl', ['$scope', '$filter', '$uibModalInstance', 
     $scope.ioc = data.ioc;
     $scope.types = data.types;
     
-    var valArray = $filter('split')($scope.ioc.value, '|');
+    var valArray = $scope.ioc.value;
     var nameArray = [];
     for (var i = 0; i < $scope.types.length; i++) {
         var type = $scope.types[i];
         if (type.type == $scope.ioc.type) {
-            nameArray = $filter('split')($scope.types[i].values_desc, '|');
+            nameArray = $scope.types[i].values_desc;
             break;
         }
     }

@@ -9,29 +9,45 @@ include_once ROOT.'/models/DBConnect.php';
 class Ioc extends Web {
 
     public function getTypesAction() {
-        return $this->db->getIndicatorTypes();
+        $types = $this->db->getIndicatorTypes();
+        foreach ($types as &$type) {
+        	$type['values_desc'] = $this->unpackArray($type['values_desc']);
+        }
+    	return $types;
     }
 
     public function listAvailableAction() {
-        return $this->db->iocFetchList();
+        $iocs = $this->db->iocFetchList();
+		foreach ($iocs as &$ioc) {
+			$ioc['value'] = $this->unpackArray($ioc['value']);
+		}
+		return $iocs;
     }
     
     public function listHiddenAction() {
-        return $this->db->iocFetchHidden();
+        $iocs = $this->db->iocFetchHidden();
+		foreach ($iocs as &$ioc) {
+			$ioc['value'] = $this->unpackArray($ioc['value']);
+		}
+		return $iocs;
     }
  
     public function getAction() {
         $this->checkParams('id');
-        return $this->db->iocFetchId($this->params['id']);
+        $ioc = $this->db->iocFetchId($this->params['id']);
+        $ioc['value'] = $this->unpackArray($ioc['value']);
+        return $ioc;
     }
  
     public function addAction() {
         $this->checkParams('name', 'type', 'value');
+        $this->params['value'] = $this->packArray(json_decode($this->params['value'], true));
         return ['id' => $this->db->iocAdd($this->params['name'], $this->params['type'], $this->params['value'])];
     }
     
     public function updateAction() {
         $this->checkParams('id', 'name', 'type', 'value');
+        $this->params['value'] = $this->packArray(json_decode($this->params['value'], true));
         return ['changed' => $this->db->iocUpdate($this->params['id'], $this->params['name'], $this->params['type'], $this->params['value'])];
     }
     

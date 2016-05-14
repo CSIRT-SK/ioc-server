@@ -1,0 +1,43 @@
+<div class="modal-header">
+    <h3 class="modal-title">Result details</h3>
+</div>
+<div class="modal-body">
+    <dl class="dl-horizontal">
+		<dt></dt>
+		<dd><h3>IOC</h3></dd>
+        <div ng-show="ioc.id">
+	        <dt>ID</dt>
+	        <dd>{{ioc.id}}</dd>
+        </div>
+        <dt>Name</dt>
+        <dd>{{ioc.name}}</dd>
+        <dt>Type</dt>
+        <dd><code class="text-uppercase">{{ioc.type}}</code></dd>
+        <div ng-show="values.length > 0">
+            <br>
+            <dt>Values:</dt>
+            <dd></dd>
+        </div>
+        <div ng-repeat="entry in values">
+            <dt>{{entry.name}}</dt>
+            <dd style="word-wrap: break-word;"><samp>{{entry.value}}</samp></dd>
+        </div>
+		<dt></dt>
+		<dd><h3>Results</h3></dd>
+		<dt>Status</dt>
+		<dd>
+	        <span ng-show="result.result" class="text-danger"><span class="glyphicon glyphicon-flag"></span> <samp>FOUND</samp></span>
+	        <span ng-hide="result.result" class="text-success"><span class="glyphicon glyphicon-ok"></span> <samp>CLEAR</samp></span>
+		</dd>
+		{{results.data}}
+		<div ng-show="result.data.length > 0">
+			<dt>Data:</dt>
+		</div>
+		<div ng-repeat="data in result.data">
+			<dd>{{data}}</dd>
+		</div>
+    </dl>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-default" type="button" ng-click="ok()">Close</button>
+</div>

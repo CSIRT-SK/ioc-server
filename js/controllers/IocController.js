@@ -178,7 +178,7 @@ app.controller('IocController', ['$scope', 'IocService', '$uibModal', function($
             $scope.iocListRaw = data;
             $scope.iocList = Object.keys(data).map(function(k) {
                 var d = data[k];
-                if (d.value === null) d.value = '';
+                d.valueStr = d.value.join('|');
                 return d;
             });
         });
@@ -189,7 +189,7 @@ app.controller('IocController', ['$scope', 'IocService', '$uibModal', function($
             $scope.iocDelListRaw = data;
             $scope.iocDelList = Object.keys(data).map(function(k) {
                 var d = data[k];
-                if (d.value === null) d.value = '';
+                d.valueStr = d.value.join('|');
                 return d;
             });
         });

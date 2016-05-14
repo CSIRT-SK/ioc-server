@@ -40,7 +40,7 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             action: 'add',
             name: ioc.name,
             type: ioc.type,
-            value: ioc.value,
+            value: angular.toJson(ioc.value),
         };
         return ApiCall(data);
     };
@@ -52,7 +52,7 @@ app.factory('IocService', ['ApiCall', function(ApiCall) {
             id: id,
             name: ioc.name,
             type: ioc.type,
-            value: ioc.value,
+            value: angular.toJson(ioc.value),
         };
         return ApiCall(data);
     };

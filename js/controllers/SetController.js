@@ -133,8 +133,14 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
         node.open = false;
         SetService.hideIoc(node.id).then(function success(data) {
             $scope.addAlert('success', 'Child removed');
-            $scope.loadSetNames();
-            $scope.loadTree($scope.selectedSet);
+            SetService.getName($scope.selectedSet).then(function success(data) {
+            	if (data.length == 0) {
+	            	$scope.selectedSet = null;
+	                $scope.loadSetNames();
+            	} else {
+            		$scope.loadTree($scope.selectedSet);
+            	}
+            });
         }, function error(msg) {
             $scope.addAlert('danger', 'Error: ' + msg);
         });
@@ -146,7 +152,7 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
             $scope.iocListRaw = data;
             $scope.iocList = Object.keys(data).map(function(k) {
                 var d = data[k];
-                if (d.value === null) d.value = '';
+                d.valueStr = d.value.join('|');
                 return d;
             });
         });
@@ -157,7 +163,7 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
             $scope.setNameList = data.map(function(v) {
                 return v.name;
             });
-            if ($scope.selectedSet === undefined) $scope.selectedSet = $scope.setNameList[0];
+            if (!$scope.selectedSet) $scope.selectedSet = $scope.setNameList[0];
         });
     };
     
