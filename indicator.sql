@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 26, 2016 at 10:20 PM
+-- Generation Time: May 14, 2016 at 08:59 PM
 -- Server version: 10.1.10-MariaDB
 -- PHP Version: 7.0.4
 
@@ -47,7 +47,8 @@ CREATE TABLE `reports` (
   `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `setname` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   `ioc_id` int(11) NOT NULL,
-  `result` tinyint(1) NOT NULL DEFAULT '0'
+  `result` tinyint(1) NOT NULL DEFAULT '0',
+  `data` text COLLATE utf8_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -138,7 +139,7 @@ ALTER TABLE `indicators`
 -- AUTO_INCREMENT for table `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `sets`
 --
