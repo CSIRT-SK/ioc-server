@@ -19,22 +19,61 @@ GET example:
 * `upload` - upload results
   * `report` - results in JSON format
 
+### IOC format
+
+Whole definition is a list of IOCs:
+```json
+[
+  <ioc>,
+  ...
+]
+```
+`<ioc>` can be either `<simple>` or `<logic>`
+
+`<simple>`:
+```json
+{
+  "id": 1,
+  "name": "name",
+  "type": "type",
+  "value": [
+    "value",
+    ...
+  ]
+}
+```
+
+`<logic>`:
+```json
+{
+  "id": 2,
+  "name": "#2",
+  "type": "and",
+  "children": [
+    <ioc>,
+    ...
+  ]
+}
+```
+
 ### Report format
 
 ```json
 {
   "org": "org",
-  "device": "dev",
+  "dev": "dev",
   "timestamp": 1461740751,
-  "setname": "test",
-  "indicators": [
+  "set": "test",
+  "results": [
     {
       "id": 1,
-      "result": 0
+      "result": 0,
+      "data": []
     },
     {
       "id": 2,
-      "result": 1
+      "result": 1,
+      "data": ["data1", "data2"]
     }
   ]
 }
