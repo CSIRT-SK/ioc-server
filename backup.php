@@ -8,28 +8,39 @@ include_once ROOT.'/controllers/Client.php';
 // var_export($_POST);
 // var_export($_FILES);
 
-if (isset($_POST['action'], $_POST['type'])) {
-	if (isset($_POST['iformat']) && $_POST['action'] == 'import') {
-		$file = $_FILES['file']; 
-		if ($file['size'] != 0) {
-			importData($_POST['type'], $_POST['iformat'], $file['tmp_name']);
+try {
+	if (isset($_POST['action'], $_POST['type'])) {
+		if (isset($_POST['iformat']) && $_POST['action'] == 'import') {
+			$file = $_FILES['file']; 
+			if ($file['size'] != 0) {
+				importData($_POST['type'], $_POST['iformat'], $file['tmp_name']);
+			} else {
+				throw new Exception('No file');
+			}
+		} else if (isset($_POST['eformat']) && $_POST['action'] == 'export') {
+			exportData($_POST['type'], $_POST['eformat']);
 		} else {
-			// TODO: error - no file
+			throw new Exception('Invalid action');
 		}
-	} else if (isset($_POST['eformat']) && $_POST['action'] == 'export') {
-		exportData($_POST['type'], $_POST['eformat']);
 	} else {
-		// TODO: error - invalid action
+		throw new Exception('No action');
 	}
-} else {
-	// TODO: error - no action
+} catch (Exception $e) {
+	headerRedirect(0, $e->getMessage());
 }
 
-function exportData($type, $format) {
+function headerExport($type, $format) {
 	header('Content-Disposition: attachment; filename="' . $type . '-' . time() . '.' . $format . '"');
 	header('Content-Type: application/octet-stream');
 	header('Connection: close');
-	
+}
+
+function headerRedirect($success, $message) {
+	header('Location: https://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'#/backup?success='.$success.'&message='.$message);
+	exit();
+}
+
+function exportData($type, $format) {
 	switch ($type) {
 		case 'ioc':
 			$iocApi = new Ioc([]);
@@ -44,16 +55,18 @@ function exportData($type, $format) {
 						unpackValues($e['value']);
 						return $e;
 					}, $iocList);
+					headerExport($type, $format);
 					echo json_encode($iocList, JSON_PRETTY_PRINT);
-					break;
+					exit();
 				case 'csv':
+					headerExport($type, $format);
 					$output = fopen('php://output', 'w');
 					fputcsv($output, ['name', 'type', 'value']);
 					foreach ($iocList as $row) fputcsv($output, $row);
 					fclose($output);
-					break;
+					exit();
 				default:
-					// TODO: error - unsupported format
+					throw new Exception('Unsupported format');
 			}
 			break;
 		
@@ -73,10 +86,11 @@ function exportData($type, $format) {
 			
 			switch ($format) {
 				case 'json':
+					headerExport($type, $format);
 					echo json_encode($setList, JSON_PRETTY_PRINT);
-					break;
+					exit();
 				default:
-					// TODO: error - unsupported format
+					throw new Exception('Unsupported format');
 			}
 			break;
 		
@@ -89,41 +103,50 @@ function exportData($type, $format) {
 					$groupedList = [];
 					foreach ($repList as &$row) {
 						unset($row['id']);
-						$key = $row['org'] . $row['device'] . $row['timestamp'] . $row['setname'];
+						$key = $row['org'] . $row['dev'] . $row['timestamp'] . $row['set'];
 		 				if (!isset($groupedList[$key])) {
 			 				$groupedList[$key] = [
 			 						'org' => $row['org'],
-			 						'device' => $row['device'],
+			 						'dev' => $row['device'],
 			 						'timestamp' => $row['timestamp'],
-			 						'setname' => $row['setname'],
-			 						'indicators' => []
+			 						'set' => $row['setname'],
+			 						'results' => []
 			 				];
 		 				}
-		 				$groupedList[$key]['indicators'][] = ['id' => $row['ioc_id'], 'result' => $row['result']];
+		 				$groupedList[$key]['results'][] = ['id' => $row['ioc_id'], 'result' => $row['result'], 'data' => $row['data']];
 					}
 					$groupedList = array_values($groupedList);
+					headerExport($type, $format);
 					echo json_encode($groupedList, JSON_PRETTY_PRINT);
-					break;
+					exit();
 				case 'csv':
 					$iocApi = new Ioc([]);
 					foreach ($repList as &$report) {
 						$result = $report['result'];
 						$id = $report['ioc_id'];
-						unset($report['id'], $report['ioc_id'], $report['result']);
-						$report['iocname'] = $iocApi->setParams(['id' => $id])->getAction()['name'];
+						$data = $report['data'];
+						packValues($data);
+						unset($report['id'], $report['ioc_id'], $report['result'], $report['data']);
+						$ioc = $iocApi->setParams(['id' => $id])->getAction();
+						packValue($ioc['value']);
+						$report['iocname'] = $ioc['name'];
+						$report['type'] = $ioc['type'];
+						$report['value'] = $ioc['value'];
 						$report['result'] = $result? 'found' : 'clear';
+						$report['data'] = $data;
 					}
+					headerExport($type, $format);
 					$output = fopen('php://output', 'w');
-					fputcsv($output, ['org', 'device', 'timestamp', 'set_name', 'ioc_name', 'result']);
+					fputcsv($output, ['org', 'dev', 'timestamp', 'set', 'ioc_name', 'ioc_type', 'ioc_value', 'result', 'data']);
 					foreach ($repList as $row) fputcsv($output, $row);
 					fclose($output);
-					break;
+					exit();
 				default:
-					// TODO: error - unsupported format
+					throw new Exception('Unsupported format');
 			}
 			break;
 		default:
-			// TODO: error - invalid type
+			throw new Exception('Invalid type');
 	}
 }
 
@@ -140,7 +163,7 @@ function importData($type, $format, $filename) {
 					$iocList = parseCsv(file($filename));
 					break;
 				default:
-					// TODO: error - unsupported format
+					throw new Exception('Unsupported format');
 			}
 			
 			if (!is_array($iocList) || isIocData($iocList)) $iocList = [$iocList];
@@ -150,10 +173,10 @@ function importData($type, $format, $filename) {
 				if (isIocData($ioc)) {
 					$iocApi->setParams($ioc)->addAction();
 				} else {
-					// TODO: error - bad data
+					throw new Exception('Bad data');
 				}
 			}
-			break;
+			headerRedirect(1, 'IOC import successful');
 		case 'set':
 			$setList = [];
 			switch ($format) {
@@ -161,7 +184,7 @@ function importData($type, $format, $filename) {
 					$setList = json_decode(file_get_contents($filename), true);
 					break;
 				default:
-					// TODO: error - unsupported format
+					throw new Exception('Unsupported format');
 			}
 
 			if (!is_array($setList) || isSetData($setList)) $setList = [$setList];
@@ -174,10 +197,10 @@ function importData($type, $format, $filename) {
 						importTree($set['name'], $root, 0);
 					}
 				} else {
-					// TODO: error - bad data
+					throw new Exception('Bad data');
 				}
 			}
-			break;
+			headerRedirect(1, 'Set import successful');
 		case 'rep':
 			$repList = [];
 			switch ($format) {
@@ -185,7 +208,7 @@ function importData($type, $format, $filename) {
 					$repList = json_decode(file_get_contents($filename), true);
 					break;
 				default:
-					// TODO: error - unsupported format
+					throw new Exception('Unsupported format');
 			}
 			
 			if (!is_array($repList) || isRepData($repList)) $repList = [$repList];
@@ -195,14 +218,13 @@ function importData($type, $format, $filename) {
 				if (isRepData($report)) {
 					$clientApi->setParams(['report' => json_encode($report)])->uploadAction();
 				} else {
-					// TODO: error - bad data
+					throw new Exception('Bad data');
 				}
 			}
-			break;
+			headerRedirect(1, 'Report import successful');
 		default:
-			// TODO: error - invalid type
+			throw new Exception('Invalid type');
 	}
-	header('Location: https://'.$_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']).'#/backup');
 }
 
 // util functions
@@ -299,10 +321,10 @@ function isSetData($data) {
 }
 
 function isRepData($data) {
-	if (!isset($data['org'],$data['device'],$data['timestamp'],$data['setname'],$data['indicators'])) return false;
-	foreach ($data['indicators'] as $element) {
-		if (!isset($element['id'], $element['result'])) return false;
-		if (gettype($element['id']) != 'integer' || gettype($element['result']) != 'integer') return false;
+	if (!isset($data['org'],$data['dev'],$data['timestamp'],$data['set'],$data['results'])) return false;
+	foreach ($data['results'] as $element) {
+		if (!isset($element['id'], $element['result'], $element['data'])) return false;
+		if (gettype($element['id']) != 'integer' || gettype($element['result']) != 'integer' && isValueArray($element['data'])) return false;
 	}
 	return true;
 }

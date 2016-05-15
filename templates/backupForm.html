@@ -4,7 +4,7 @@
 		<label>Export:</label>
 		<div class="input-group">
 			<select name="eformat" class="form-control">
-				<option ng-repeat="format in formats" value="{{format}}">{{format}}</option>
+				<option ng-repeat="format in formats.e" value="{{format}}">{{format}}</option>
 			</select>
 			<div class="input-group-btn">
 				<button type="submit" name="action" value="export" class="btn btn-primary">Export</button>
@@ -19,7 +19,7 @@
 	<div class="form-group">
 		<div class="input-group">
 		<select name="iformat" class="form-control">
-			<option ng-repeat="format in formats" value="{{format}}">{{format}}</option>
+			<option ng-repeat="format in formats.i" value="{{format}}">{{format}}</option>
 		</select>
 			<div class="input-group-btn">
 				<button type="submit" name="action" value="import" class="btn btn-primary">Import</button>
