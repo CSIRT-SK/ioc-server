@@ -4,6 +4,18 @@
     </div>
     <div class="row">
         <div class="panel panel-default panel-body">
+			<div class="row">
+				<div class="col-sm-2 pull-right">
+					<div class="input-group">
+						<span class="input-group-addon">Page</span>
+						<select class="form-control" ng-model="pagination.size" ng-options="size as size for size in [1,10, 20, 50, 100]">
+						</select>
+					</div>
+				</div>
+				<div class="pull-right">
+					<uib-pagination ng-model="pagination.page" total-items="reportList.length" items-per-page="pagination.size" max-size="5" boundary-links="true" previous-text="&lsaquo;" next-text="&rsaquo;" first-text="&laquo;" last-text="&raquo;" style="margin: 0;"></uib-pagination>
+				</div>
+			</div>
             <table class="table table-hover table-condensed">
                 <thead><!-- list table head -->
                     <tr>
@@ -17,8 +29,8 @@
                                 <input ng-if="col.title != 'Time' && col.title != 'Result'" type="text" ng-model="table.search[col.sort]" class="form-control" placeholder="Filter"></input>
 
                                 <div ng-if="col.title == 'Time'">
-                                    <input class="form-control hidden-input pull-left" type="text" uib-datepicker-popup="''" ng-model="date.start" is-open="date.startOpened" datepicker-options="date.options" show-button-bar="false"></input>
-                                    <input class="form-control hidden-input pull-left" type="text" uib-datepicker-popup="''" ng-model="date.end" is-open="date.endOpened" datepicker-options="date.options" show-button-bar="false"></input>
+                                    <input class="form-control hidden-input pull-left" type="text" uib-datepicker-popup="dd" ng-model="date.start" is-open="date.startOpened" datepicker-options="date.options" show-button-bar="false"></input>
+                                    <input class="form-control hidden-input pull-left" type="text" uib-datepicker-popup="dd" ng-model="date.end" is-open="date.endOpened" datepicker-options="date.options" show-button-bar="false"></input>
                                     <div class="input-group">
                                         <span class="input-group-btn">
                                             <button type="button" class="btn btn-default" ng-click="date.openStart()">
@@ -44,7 +56,7 @@
                     </tr>
                 </thead>
                 <tbody><!-- list table body -->
-                    <tr ng-repeat="row in reportList | orderBy:table.sort.col.sort:table.sort.reverse | filter:table.search">
+                    <tr ng-repeat="row in reportList | orderBy:table.sort.col.sort:table.sort.reverse | filter:table.search | limitTo:pagination.size:pagination.size*(pagination.page-1)">
                         <td>{{row.org}}</td>
                         <td>{{row.device}}</td>
                         <td>{{row.timestamp * 1000 | date:'dd. MMM yy, HH:mm'}}</td>

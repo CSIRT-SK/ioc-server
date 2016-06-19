@@ -98,10 +98,21 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
     	}
     }
     
+    // pagination
+    
+    $scope.pagination = {
+    		size: 20,
+    		page: 1
+    };
+    
+    $scope.$watch('pagination.pageSize', function(val) {console.log(val);});
+    
     // date picker
     $scope.dateRange = "";
+    var weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
     $scope.date = {
-        start: new Date(1451606400 * 1000), // 1.1.2016
+        start: weekAgo,
         end: new Date()
     };
     
@@ -122,9 +133,9 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
         maxDate: new Date(),
         showWeeks: false
     };
-    
-    $scope.$watch('date', function(newVal) {
-        $scope.dateRange = $filter('date')(newVal.start, 'd.M.yy') + ' - ' + $filter('date')(newVal.end, 'd.M.yy');
+      
+    $scope.$watch('date', function() {
+        $scope.dateRange = $filter('date')($scope.date.start, 'd.M.yy') + ' - ' + $filter('date')($scope.date.end, 'd.M.yy');
         $scope.loadReports();
     }, true);
     
