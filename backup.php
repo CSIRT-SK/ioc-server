@@ -51,14 +51,14 @@ function exportData($type, $format) {
 			
 			switch ($format) {
 				case 'json':
-					$iocList = array_map(function($e) { // explode values in json
-						unpackValues($e['value']);
-						return $e;
-					}, $iocList);
 					headerExport($type, $format);
 					echo json_encode($iocList, JSON_PRETTY_PRINT);
 					exit();
 				case 'csv':
+					$iocList = array_map(function($e) { // explode values in json
+						packValues($e['value']);
+						return $e;
+					}, $iocList);
 					headerExport($type, $format);
 					$output = fopen('php://output', 'w');
 					fputcsv($output, ['name', 'type', 'value']);
@@ -128,7 +128,7 @@ function exportData($type, $format) {
 						packValues($data);
 						unset($report['id'], $report['ioc_id'], $report['result'], $report['data']);
 						$ioc = $iocApi->setParams(['id' => $id])->getAction();
-						packValue($ioc['value']);
+						packValues($ioc['value']);
 						$report['iocname'] = $ioc['name'];
 						$report['type'] = $ioc['type'];
 						$report['value'] = $ioc['value'];
