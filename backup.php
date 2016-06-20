@@ -157,10 +157,11 @@ function importData($type, $format, $filename) {
 			switch ($format) {
 				case 'json':
 					$iocList = json_decode(file_get_contents($filename), true);
-					foreach ($iocList as &$ioc) packValues($ioc['value']);
+// 					foreach ($iocList as &$ioc) $ioc['value'] = json_encode($ioc['value']);
 					break;
 				case 'csv':
 					$iocList = parseCsv(file($filename));
+					foreach ($iocList as &$ioc) unpackValues($ioc['value']);
 					break;
 				default:
 					throw new Exception('Unsupported format');
@@ -171,6 +172,7 @@ function importData($type, $format, $filename) {
 			$iocApi = new Ioc([]);
 			foreach ($iocList as $ioc) {
 				if (isIocData($ioc)) {
+					$ioc['value'] = json_encode($ioc['value']);
 					$iocApi->setParams($ioc)->addAction();
 				} else {
 					throw new Exception('Bad data');
@@ -246,8 +248,7 @@ function importTree($name, $node, $parentId) {
 			}
 		}
 	} else {
-		packValues($node['value']);
-		$iocApi = new Ioc(['name' => $node['name'], 'type' => $node['type'], 'value' => $node['value']]);
+		$iocApi = new Ioc(['name' => $node['name'], 'type' => $node['type'], 'value' => json_encode($node['value'])]);
 		$id = $iocApi->addAction()['id'];
 		$setApi = new Set(['name' => $name, 'type' => 'ioc', 'parent' => $parentId, 'ioc' => $id]);
 		$setApi->addAction();
