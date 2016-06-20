@@ -45,14 +45,18 @@ app.controller('SetController', ['$scope', 'IocService', 'SetService', '$uibModa
         var modalInstance = setAddModalInstance();
         
         modalInstance.result.then(function success(data) {
-            SetService.addIoc($scope.newSetName, data.type, 0, data.id).then(function success(data) {
-                $scope.addAlert('success', 'Child added');
-                $scope.loadSetNames();
-                $scope.loadIoc();
-                $scope.selectedSet = $scope.newSetName;
-            }, function error(msg) {
-                $scope.addAlert('danger', 'Error: ' + msg);
-            });
+        	SetService.addIoc($scope.newSetName, 'root', -1, null).then(function success() {
+                SetService.addIoc($scope.newSetName, data.type, 0, data.id).then(function success() {
+                    $scope.addAlert('success', 'Child added');
+                    $scope.loadSetNames();
+                    $scope.loadIoc();
+                    $scope.selectedSet = $scope.newSetName;
+                }, function error(msg) {
+                    $scope.addAlert('danger', 'Error: ' + msg);
+                });        		
+        	}, function error(msg) {
+        		$scope.addAlert('danger', 'Error: ' + msg);
+        	});
         });
     };
     

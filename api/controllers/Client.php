@@ -90,9 +90,47 @@ class Client extends AbstractController {
             $indicator['data'] = $this->packArray($indicator['data']);
         }
 
+        $setTree = ['type' => 'or', 'id' => $this->db->setFetchRoot($report['set'], 0)['id'], 'children' => $this->setParams(['name' => $report['set']])->requestAction()];
+        
+        $this->evaluateTree($setTree, $report['results']);
+        
+//         var_export($report['results']);
+        
         $result = $this->db->repAddMulti($report);
         
         return ['added' => $result];
+    }
+    
+    private function evaluateTree(&$node, &$results) {
+    	if ($node['type'] == 'and') {
+    		// calc from children
+    		$res = true;
+    		foreach ($node['children'] as &$child) {
+    			$this->evaluateTree($child, $results);
+    			$res = $res && $child['result'];
+    		}
+    		$node['result'] = $res;
+    		
+    		$results[] = ['id' => $node['id'], 'result' => $node['result'], 'data' => ''];
+    	} else  if ($node['type'] == 'or') {
+    		// calc from children
+			$res = false;
+    		foreach ($node['children'] as &$child) {
+    			$this->evaluateTree($child, $results);
+    			$res = $res || $child['result'];
+    		}
+    		$node['result'] = $res;
+
+    		$results[] = ['id' => $node['id'], 'result' => $node['result'], 'data' => ''];
+    	} else {
+    		// find result
+    		foreach ($results as $res) {
+    			if ($res['id'] == $node['id']) {
+    				$node['result'] = $res['result'];
+    				break;
+    			}
+    		}
+    	}
     }
 }
 ?>

@@ -27,33 +27,24 @@ class Set extends Web {
     	return $this->db->setGetChildren($this->params['id']);
     }
     
-    public function testAction() {
-    	return $this->db->setRowExists('test2', 0, 'ioc', 21);
-    }
-    
     public function addAction() {
         $this->checkParams('name', 'type', 'parent');
         if ($this->params['type'] == 'ioc') {
         	$this->checkParams('ioc');
-
-        	$exists = $this->db->setHiddenRowExists($this->params['name'], $this->params['parent'], $this->params['type'], $this->params['ioc']);
-        	if ($exists == null) {
-        		return ['id' => $this->db->setAdd($this->params['name'], $this->params['parent'], $this->params['type'], $this->params['ioc'])];
-        	} else {
-        		$this->db->setHide($exists['id'], false);
-        		return $exists;
-        	}
-        } else if ($this->params['type'] == 'and' || $this->params['type'] == 'or') {
-        	$exists = $this->db->setHiddenRowExists($this->params['name'], $this->params['parent'], $this->params['type'], null);
-        	
-        	if ($exists == null) {
-        		return ['id' => $this->db->setAdd($this->params['name'], $this->params['parent'], $this->params['type'], null)];
-        	} else {
-        		$this->db->setHide($exists['id'], false);
-        		return $exists;
-        	}
-        } else {
+        } else  if (in_array($this->params['type'], ['and', 'or', 'root'])) {
+        	$this->params['ioc'] = null;
+		} else {
         	throw new Exception('Unsupported type "' . $this->params['type'] . '"');
+        }
+        
+        if ($this->params['type'] == 'root' && $this->db->setFetchRoot($this->params['name'], 0)) throw new Exception('Set "' . $this->params['name'] . '" already exists');
+        
+        $exists = $this->db->setHiddenRowExists($this->params['name'], $this->params['parent'], $this->params['type'], $this->params['ioc']);
+        if ($exists == null) {
+        	return ['id' => $this->db->setAdd($this->params['name'], $this->params['parent'], $this->params['type'], $this->params['ioc'])];
+        } else {
+        	$this->db->setHide($exists['id'], false);
+        	return $exists;
         }
     }
     
@@ -61,9 +52,22 @@ class Set extends Web {
         $this->checkParams('id', 'hidden');
         if ($this->params['hidden']) {
         	$changed = $this->hideRec($this->params['id']);
+
+        	$entry = $this->db->setFetchId($this->params['id']);
+        	if (count($this->db->setFetchName($entry['name'])) == 0) { // removed last node - is empty
+        		$rootId = $this->db->setFetchRoot($entry['name'], 0)['id'];
+        		$changed += $this->db->setHide($rootId, true); // hide root
+        	}
         } else {
-        	$changed = $this->db->setHide($id, false);
-        }
+        	$changed = $this->db->setHide($this->params['id'], false);
+
+        	$entry = $this->db->setFetchId($this->params['id']);
+        	if (count($this->db->setFetchName($entry['name'])) > 0) { // readded first node - readd root
+        		$rootId = $this->db->setFetchRoot($entry['name'], 1)['id'];
+        		$changed += $this->db->setHide($rootId, false);
+        	}
+        	}
+        
         return ['changed' => $changed];
     }
     

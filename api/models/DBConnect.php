@@ -252,7 +252,7 @@ class DBConnect {
         // fetch an indicator set from the `sets` table
         $sql = 'SELECT `id`, `parent_id`, `type`, `ioc_id` '.
                'FROM `sets` '.
-               'WHERE `name` = ? AND `hidden` = 0;';
+               'WHERE `name` = ? AND `parent_id` != -1 AND `hidden` = 0;';
         
         if (!$stmt = $this->mysqli->prepare($sql))
             throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
@@ -278,7 +278,7 @@ class DBConnect {
 
     public function setFetchId($id) {
         // fetch an indicator set from the `sets` table
-        $sql = 'SELECT `id`, `parent_id`, `type`, `ioc_id`, `hidden` '.
+        $sql = 'SELECT `name`, `id`, `parent_id`, `type`, `ioc_id`, `hidden` '.
                'FROM `sets` '.
                'WHERE `id` = ?;';
         
@@ -300,10 +300,33 @@ class DBConnect {
         return $result->fetch_assoc();
     }
 
+    public function setFetchRoot($setname, $hidden) {
+    	$sql = 'SELECT `id` '.
+    		   'FROM `sets` '.
+    		   'WHERE `name` = ? AND `parent_id` = -1 AND `type` = \'root\' AND `hidden` = ?;';
+    	 
+    	if (!$stmt = $this->mysqli->prepare($sql))
+    		throw new Exception('Error preparing statement [' . $this->mysqli->error . ']');
+    		 
+    	if (!$stmt->bind_param('si', $setname, $hidden))
+    		throw new Exception('Error binding parameters [' . $stmt->error . ']');
+    	
+    	if (!$stmt->execute())
+    		throw new Exception('Error executing statement [' . $stmt->error . ']');
+    			 
+    	if (!$result = $stmt->get_result())
+    		throw new Exception('Error getting result [' . $stmt->error . ']');
+    				 
+    	if (!$stmt->close())
+    		throw new Exception('Error closing statement [' . $stmt->error . ']');
+    					 
+    	return $result->fetch_assoc();
+    }
+       
     public function setHiddenRowExists($setname, $parent_id, $type, $ioc_id) {
     	$sql = 'SELECT `id` '.
-    			'FROM `sets` '.
-    			'WHERE `name` = ? AND `parent_id` = ? AND `type` = ? AND `hidden` = 1 AND `ioc_id` ';
+    		   'FROM `sets` '.
+    		   'WHERE `name` = ? AND `parent_id` = ? AND `type` = ? AND `hidden` = 1 AND `ioc_id` ';
     	if (isset($ioc_id)) $sql .= '= ?;';
     	else $sql .= 'IS NULL;';
     	
