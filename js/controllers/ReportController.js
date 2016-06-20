@@ -99,22 +99,45 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
     	}
     }
     
-    $scope.iocNameClass = function(result) {
+    $scope.resultTypeClass = function(result) {
     	var id = result.ioc_id;
     	if ($scope.iocMap.hasOwnProperty(id)) {
     		var textClass = '';
     		switch ($scope.iocMap[id].type) {
     			case 'and':
     			case 'or':
-    				textClass = 'label-warning';
+    				textClass = 'btn-warning';
     				break;
     			case 'root':
-    				textClass = 'label-primary';
+    				textClass = 'btn-primary';
     				break;
     			default:
-    				textClass = 'label-default';
+    				textClass = '';
     		}
     		return textClass;
+    	} else {
+    		return '';
+    	}
+    }
+    
+    $scope.resultTypeText = function(result) {
+    	var id = result.ioc_id;
+    	if ($scope.iocMap.hasOwnProperty(id)) {
+    		var text = '';
+    		switch ($scope.iocMap[id].type) {
+    			case 'and':
+    				text = 'and';
+    				break;
+    			case 'or':
+    				text = 'or';
+    				break;
+    			case 'root':
+    				text = 'set';
+    				break;
+    			default:
+    				text = '';
+    		}
+    		return text;
     	} else {
     		return '';
     	}
@@ -174,7 +197,7 @@ app.controller('ReportController', ['$scope', '$filter', 'IocService', 'SetServi
 	    				$scope.reportList[reportId].iocName = data.name;
 	    			});
 	    		} else if (data.type == 'root') {
-	    			var name = 'set result';
+	    			var name = data.name;
 	    			$scope.iocMap[id] = {
 	    				id: null,
 	    				name: name,
