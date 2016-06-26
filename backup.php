@@ -195,8 +195,21 @@ function importData($type, $format, $filename) {
 			$setApi = new Set([]);
 			foreach ($setList as $set) {
 				if (isSetData($set)) {
+					$goodName = $set['name'];
+					$iter = 1;
+					$namePassed = false;
+					while (!$namePassed) {
+						$namePassed = true;
+						try {
+							$setApi->setParams(['name' => $goodName, 'type' => 'root', 'parent' => -1])->addAction();
+						} catch (Exception $e) {
+							$namePassed = false;
+							$iter++;
+							$goodName = $set['name'] . ' ' . $iter;
+						}
+					}
 					foreach ($set['data'] as $root) {
-						importTree($set['name'], $root, 0);
+						importTree($goodName, $root, 0);
 					}
 				} else {
 					throw new Exception('Bad data');
