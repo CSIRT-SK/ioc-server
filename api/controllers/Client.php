@@ -94,7 +94,7 @@ class Client extends AbstractController {
         
         $this->evaluateTree($setTree, $report['results']);
         
-//         var_export($report['results']);
+//      var_export($report['results']);
         
         $result = $this->db->repAddMulti($report);
         
@@ -107,7 +107,7 @@ class Client extends AbstractController {
     		$res = true;
     		foreach ($node['children'] as &$child) {
     			$this->evaluateTree($child, $results);
-    			if ($child['result'] == null) continue; // results were not uploaded
+    			if ($child['result'] === null) continue; // results were not uploaded
     			$res = $res && $child['result'];
     		}
     		$node['result'] = $res;
@@ -118,7 +118,7 @@ class Client extends AbstractController {
 			$res = false;
     		foreach ($node['children'] as &$child) {
     			$this->evaluateTree($child, $results);
-    			if ($child['result'] == null) continue; // results were not uploaded
+    			if ($child['result'] === null) continue; // results were not uploaded
     			$res = $res || $child['result'];
     		}
     		$node['result'] = $res;
