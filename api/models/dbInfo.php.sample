@@ -1,0 +1,7 @@
+<?php
+define ( 'HOST', 'localhost' );
+define ( 'USER', 'user' );
+define ( 'PASS', 'pass' );
+define ( 'DATABASE', 'database' );
+define ( 'ADMIN_CERT', 'admin cert' );
+?>

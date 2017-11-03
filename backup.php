@@ -338,7 +338,7 @@ function isRepData($data) {
 	if (!isset($data['org'],$data['dev'],$data['timestamp'],$data['set'],$data['results'])) return false;
 	foreach ($data['results'] as $element) {
 		if (!isset($element['id'], $element['result'], $element['data'])) return false;
-		if (gettype($element['id']) != 'integer' || gettype($element['result']) != 'integer' && isValueArray($element['data'])) return false;
+		if (gettype($element['id']) != 'integer' || (gettype($element['result']) != 'integer' && gettype($element['result']) != 'boolean' ) || !isValueArray($element['data'])) return false; //fix by LB
 	}
 	return true;
 }
