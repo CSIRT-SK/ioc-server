@@ -1,4 +1,8 @@
-# Deployment
+# IoC Checker
+
+![Screenshot of admin panel](https://raw.githubusercontent.com/CSIRT-SK/ioc-server/master/screenshot.png)
+
+## Deployment
 Web server needs to have HTTPS with client certificate verification enabled to work properly.
 
 Create database and import `indicators.sql` into it. This will set up the tables as well as default IOC types.
